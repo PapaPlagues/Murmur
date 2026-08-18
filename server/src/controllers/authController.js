@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
     try {
@@ -36,18 +37,48 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        res.status(201).json({
-            message: "Login route works!"
-        });
+       const { email, password } = req.body;
+
+       if (!email || !password) {
+            return res.status(400).json({
+                error: "Email and password are required"
+            });
+        }
+
+       // Find user
+       const user = await prisma.user.findUnique({
+        where: { email }
+       });
+
+       if (!user) {
+        return res.status(401).json({error: "Invalid credentials"});
+       }
+
+       // check password
+       const isValid = await bcrypt.compare(password, user.passwordHash);
+
+       if (!isValid) {
+        return res.status(401).json({ error: "Invalid credentials" });
+       }
+
+       // create token
+       const token = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+       );
+
+       return res.status(200).json({ token });
+
     } catch (err) {
-        res.status(500).json({ error: "cannot fetch"});
+        res.status(500).json({ error: "Login failed"});
     }
 }
 
 export const logout = async (req, res) => {
     try {
         res.status(201).json({
-            message: "Logout route works!"
+            message: "Logged out successfully"
         });
     } catch (err) {
         res.status(500).json({ error: "cannot fetch"});
@@ -56,10 +87,31 @@ export const logout = async (req, res) => {
 
 export const getCurrentUser = async (req, res) => {
     try {
-        res.status(201).json({
-            message: "Me route works!"
+        const user = await prisma.user.findUnique({
+            where: {
+                id: req.user.userId
+            },
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                displayName: true,
+                avatar: true,
+                bio: true
+            }
         });
+
+        if (!user) {
+            return res.status(404).json({
+                error: "User not found"
+            });
+        }
+
+        return res.status(200).json(user);
+
     } catch (err) {
-        res.status(500).json({ error: "cannot fetch"});
+        console.error(err);
+
+        return res.status(500).json({ error: "Failed to get user"});
     }
 }
