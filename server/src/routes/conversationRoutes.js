@@ -1,6 +1,6 @@
 import express from "express";
-import { createConversation, getConversations, getConversation } from "../controllers/conversationController";
-import { authenticate } from "../middleware/authMiddleware";
+import { createConversation, getConversations, getConversation } from "../controllers/conversationController.js";
+import { authenticate } from "../middleware/authMiddleware.js";
 
 const conversationRouter = express.Router();
 
@@ -12,3 +12,5 @@ conversationRouter.get("/", authenticate, getConversations);
 
 // get conversation
 conversationRouter.get("/:conversationId", authenticate, getConversation);
+
+export default conversationRouter;

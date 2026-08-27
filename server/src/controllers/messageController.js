@@ -1,6 +1,6 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 
-export const getMessages = (req, res) => {
+export const getMessages = async (req, res) => {
     try {
         const { conversationId } = req.params;
         const userId = req.user.userId;
@@ -54,7 +54,7 @@ export const getMessages = (req, res) => {
     }
 };
 
-export const createMessage = (req, res) => {
+export const createMessage = async (req, res) => {
     try {
         const { conversationId } = req.params;
         const { content } = req.body;

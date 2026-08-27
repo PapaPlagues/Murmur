@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import messageRouter from "./routes/messageRoutes.js";
+import conversationRouter from "./routes/conversationRoutes.js";
 
 const app = express();
 
@@ -31,6 +33,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/auth", authRouter);
-app.use("/user", userRouter);
+app.use("/users", userRouter);
+app.use("/conversations", messageRouter);
+app.use("/conversations", conversationRouter);
+
 
 export default app;

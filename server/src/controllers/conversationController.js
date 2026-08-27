@@ -1,6 +1,6 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 
-export const createConversation = (req, res) => {
+export const createConversation = async (req, res) => {
     try {
        const currentUserId = req.user.userId;
        const { userId } = req.body;
@@ -18,7 +18,7 @@ export const createConversation = (req, res) => {
        }
 
        // Make sure the other user exists
-       const user = await prisma.findUnique({
+       const user = await prisma.user.findUnique({
             where: {
               id: Number(userId)  
             }
@@ -71,7 +71,7 @@ export const createConversation = (req, res) => {
     }
 };
 
-export const getConversations = (req, res) => {
+export const getConversations = async (req, res) => {
     try {
         const userId = req.user.userId;
 
@@ -102,7 +102,7 @@ export const getConversations = (req, res) => {
         );
 
         const conversations = memberships.map(
-            memberships => membership.conversation
+            membership => membership.conversation
         );
 
         return res.status(200).json(conversations);
@@ -117,7 +117,7 @@ export const getConversations = (req, res) => {
 
 }
 
-export const getConversation = (req, res) => {
+export const getConversation = async (req, res) => {
      try {
         const { conversationId } = req.params;
         const userId = req.user.userId;
@@ -131,13 +131,18 @@ export const getConversation = (req, res) => {
                     }
                 }
             },
-            include: {
+           include: {
                 members: {
                     select: {
-                        id: true,
-                        username: true,
-                        displayName: true,
-                        avatar: true
+                        userId: true,
+                        user: {
+                            select: {
+                                id: true,
+                                username: true,
+                                displayName: true,
+                                avatar: true
+                            }
+                        }
                     }
                 }
             }
