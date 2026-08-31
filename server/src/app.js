@@ -10,23 +10,25 @@ const app = express();
 
 // Middleware
 const allowedOrigins = [
-    process.env.DEV_FRONTEND_URL,
-    process.env.PROD_FRONTEND_URL
+  process.env.DEV_FRONTEND_URL,
+  process.env.PROD_FRONTEND_URL,
 ];
 
-app.use(cors({
-    origin: function(origin, callback) {
-        if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
-        }
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
 
-        return callback(new Error("Not allowed by CORS"));
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE"],
-}));
+  }),
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +38,5 @@ app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/conversations", messageRouter);
 app.use("/conversations", conversationRouter);
-
 
 export default app;

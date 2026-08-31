@@ -1,5 +1,9 @@
 import express from "express";
-import { getUsers, getUser, updateProfile } from "../controllers/userController.js";
+import {
+  getUsers,
+  getUser,
+  updateProfile,
+} from "../controllers/userController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
 const userRouter = express.Router();
@@ -12,6 +16,5 @@ userRouter.patch("/me", authenticate, updateProfile);
 
 // get user
 userRouter.get("/:userId", authenticate, getUser);
-
 
 export default userRouter;
