@@ -4,8 +4,8 @@ import {
     SidebarFooter,
     SidebarHeader,
 } from "@/components/ui/sidebar";
-
 import { MessageSquare, User, LogOut } from "lucide-react";
+import { Link } from "react-router";
 
 const AppSidebar = () => {
     return (
@@ -17,15 +17,18 @@ const AppSidebar = () => {
             </SidebarHeader>
 
             <SidebarContent className="bg-gray-950 p-4">
-                <button className="flex w-full items-center gap-3 rounded-lg p-3 hover:bg-gray-800">
+                <Link
+                    to="/"
+                    className="flex w-full items-center gap-3 rounded-lg p-3 hover:bg-gray-800"
+                >
                     <MessageSquare size={20} />
                     <span>Messages</span>
-                </button>
-
-                <button className="mt-2 flex w-full items-center gap-3 rounded-lg p-3 hover:bg-gray-800">
+                </Link>
+               
+                <Link to="/profile" className="mt-2 flex w-full items-center gap-3 rounded-lg p-3 hover:bg-gray-800">
                     <User size={20} />
                     <span>Profile</span>
-                </button>
+                </Link>
             </SidebarContent>
 
             <SidebarFooter className="border-t border-gray-800 bg-gray-950 p-4">
