@@ -9,20 +9,76 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { Ghost } from "lucide-react";
-
+import { useState } from "react";
+import { useNavigate } from "react-router";
 
 const Register = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    displayName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  // Update state when input changes
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Handle form submission and API call
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        },
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage("Registration successful!");
+        navigate("/login");
+      } else {
+        setMessage(data.message || "Registration failed.");
+      }
+    } catch (err) {
+      setMessage("An error occured. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <>
-      <main className="flex min-h-screen items-center justify-center px-4"> 
-        <form action="" className="w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-sm">
+    <main className="flex min-h-screen items-center justify-center px-4 flex-col">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-sm"
+      >
         <FieldSet>
           <div className="mb-6 text-center">
             <div className="flex items-center gap-2 justify-center">
-                 <Ghost />
-                <h1 className="text-2xl font-bold">Murmur</h1>
+              <Ghost />
+              <h1 className="text-2xl font-bold">Murmur</h1>
             </div>
-           
 
             <p className="mt-1 text-sm text-muted-foreground">
               Connect. Chat. Murmur.
@@ -34,7 +90,10 @@ const Register = () => {
               <FieldLabel htmlFor="username">Username</FieldLabel>
               <Input
                 id="username"
+                name="username"
                 type="text"
+                value={formData.username}
+                onChange={handleChange}
                 placeholder="johndoe"
                 required
               />
@@ -47,8 +106,12 @@ const Register = () => {
               <FieldLabel htmlFor="displayName">Display Name</FieldLabel>
               <Input
                 id="displayName"
+                name="displayName"
                 type="text"
+                value={formData.displayName}
+                onChange={handleChange}
                 placeholder="John Doe"
+                required
               />
               <FieldDescription>
                 This is the name other users will see.
@@ -59,8 +122,12 @@ const Register = () => {
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
                 id="email"
+                name="email"
                 type="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="johndoe@email.com"
+                required
               />
             </Field>
 
@@ -68,8 +135,12 @@ const Register = () => {
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input
                 id="password"
+                name="password"
                 type="password"
+                value={formData.password}
+                onChange={handleChange}
                 placeholder="••••••••"
+                required
               />
               <FieldDescription>
                 Must be at least 8 characters long.
@@ -82,30 +153,33 @@ const Register = () => {
               </FieldLabel>
               <Input
                 id="confirmPassword"
+                name="confirmPassword"
                 type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 placeholder="••••••••"
+                required
               />
             </Field>
           </FieldGroup>
 
-          <Button className="w-full" type="submit">Create Account</Button>
-        
+          <Button className="w-full" type="submit">
+            {loading ? "Registering..." : "Create Account"}
+          </Button>
 
           <div className="mt-4 text-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-primary hover:underline"
-              >
+              <Link to="/login" className="text-primary hover:underline">
                 Login
               </Link>
             </p>
           </div>
         </FieldSet>
-        </form>
-      </main>
-    </>
+      </form>
+
+      <div className="p-6">{message && <p>{message}</p>}</div>
+    </main>
   );
 };
 

@@ -5,7 +5,6 @@ import Profile from "./routes/Profile.jsx";
 import Login from "./routes/Login.jsx";
 import Register from "./routes/Register.jsx";
 
-
 const router = createBrowserRouter([
   {
     element: <Layout />,
@@ -27,7 +26,7 @@ const router = createBrowserRouter([
   {
     element: <Register />,
     path: "/register",
-  }
+  },
 ]);
 
 export default router;
