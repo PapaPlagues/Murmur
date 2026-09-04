@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Ghost } from "lucide-react";
+import useAuthStore from "@/stores/authStore";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,8 @@ const Login = () => {
 
   const navigate = useNavigate();
 
+  const loginUser = useAuthStore((state) => state.login);
+
   // Update state when input changes
   const handleChange = (e) => {
     setFormData({
@@ -28,29 +31,15 @@ const Login = () => {
   // Handle form submission and API call
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setMessage("");
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        },
-      );
+      await loginUser(formData);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage("Login successful!");
-        navigate("/");
-      } else {
-        setMessage(data.message || "Login failed.");
-      }
+      setMessage("Login successful!");
+      navigate("/");
     } catch (err) {
       setMessage("An error occured. Please try again.");
     } finally {
