@@ -2,7 +2,12 @@ import { prisma } from "../../lib/prisma.js";
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany({
+     const users = await prisma.user.findMany({
+      where: {
+        id: {
+          not: req.user.userId,
+        },
+      },
       select: {
         id: true,
         username: true,

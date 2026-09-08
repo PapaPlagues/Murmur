@@ -1,9 +1,19 @@
 import ConversationSearch from "@/features/conversations/components/ConversationSearch";
 import ConversationItem from "@/features/conversations/components/ConversationItem";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import useUserStore from "@/stores/userStore";
 
-const ConversationList = ({ setSelectedConversation }) => {
+const ConversationList = ({ setSelectedConversation, setSelectedProfile }) => {
   const [showUsers, setShowUsers ] = useState(false);
+
+  const getUsers = useUserStore((state) => state.getUsers);
+  const users = useUserStore((state) => state.users);
+
+  useEffect(() => {
+    if (showUsers) {
+      getUsers();
+    }
+  }, [showUsers, getUsers]); 
 
   const conversations = [
     {
@@ -169,6 +179,10 @@ const ConversationList = ({ setSelectedConversation }) => {
     setSelectedConversation(conversation);
   };
 
+  const handleProfileClick = (profile) => {
+    setSelectedProfile(profile);
+  }
+
   return (
     <section className="w-80 border-r border-border bg-card p-4">
       <div className="flex items-center justify-between">
@@ -194,7 +208,14 @@ const ConversationList = ({ setSelectedConversation }) => {
   {showUsers ? (
     <div>
       <p>Users</p>
-      {/* all users */}
+      {users.map((user) => (
+         <ConversationItem
+          key={user.id}
+          username={user.username}
+          avatar={user.avatar}
+          onClick={() => handleProfileClick(user)}
+        />
+      ))}
     </div>
   ) : (
     <div>
