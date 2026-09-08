@@ -60,7 +60,7 @@ const Register = () => {
       } else {
         setMessage(data.message || "Registration failed.");
       }
-    } catch (err) {
+    } catch {
       setMessage("An error occured. Please try again.");
     } finally {
       setLoading(false);

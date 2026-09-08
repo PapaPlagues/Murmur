@@ -4,8 +4,9 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { MessageSquare, User, LogOut, Ghost } from "lucide-react";
+import { MessageSquare, User, Ghost } from "lucide-react";
 import { Link } from "react-router";
+import { LogOutButton } from "./LogoutButton";
 
 const AppSidebar = () => {
   return (
@@ -36,10 +37,7 @@ const AppSidebar = () => {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border bg-sidebar p-4">
-        <button className="flex w-full items-center gap-3 rounded-lg p-3 hover:bg-muted">
-          <LogOut size={20} />
-          <span>Logout</span>
-        </button>
+        <LogOutButton />
       </SidebarFooter>
     </Sidebar>
   );

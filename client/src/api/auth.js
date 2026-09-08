@@ -1,6 +1,3 @@
-const authHeaders = (token) =>
-  token ? { Authorization: `Bearer ${token}` } : {};
-
 const handleResponse = async (res) => {
   const data = await res.json();
 
@@ -21,6 +18,7 @@ export const login = async (formData) => {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(formData),
   });
 
@@ -28,10 +26,22 @@ export const login = async (formData) => {
 };
 
 // GET user
-export const getCurrentUser = async (token) => {
+export const getCurrentUser = async () => {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-    headers: authHeaders(token),
+    credentials: "include",
   });
 
   return handleResponse(response);
 };
+
+// Logout user
+export const logout = async () => {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`,
+    {
+      method: "POST",
+      credentials: "include",
+    },
+  );
+
+  return handleResponse(response);
+}

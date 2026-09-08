@@ -1,7 +1,10 @@
 import ConversationSearch from "@/features/conversations/components/ConversationSearch";
 import ConversationItem from "@/features/conversations/components/ConversationItem";
+import { useState } from "react";
 
 const ConversationList = ({ setSelectedConversation }) => {
+  const [showUsers, setShowUsers ] = useState(false);
+
   const conversations = [
     {
       id: 1,
@@ -168,23 +171,45 @@ const ConversationList = ({ setSelectedConversation }) => {
 
   return (
     <section className="w-80 border-r border-border bg-card p-4">
-      <h2 className="text-lg font-semibold">Conversations</h2>
+      <div className="flex items-center justify-between">
+    <h2 className="text-lg font-semibold">
+      {showUsers ? "People" : "Conversations"}
+    </h2>
 
-      <div>
+    <button
+      type="button"
+      onClick={() => setShowUsers(!showUsers)}
+      className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
+      aria-label="New conversation"
+    >
+      <span className="text-xl">{showUsers ?  "×" : "+"}</span>
+    </button>
+  </div>
+
+      <div className="mt-4">
         <ConversationSearch />
       </div>
 
       <div className="my-7">
-        {conversations.map((conversation) => (
-          <ConversationItem
-            key={conversation.id}
-            username={conversation.username}
-            lastMessage={conversation.lastMessage}
-            avatar={conversation.avatar}
-            onClick={() => handleConversationClick(conversation)}
-          />
-        ))}
-      </div>
+  {showUsers ? (
+    <div>
+      <p>Users</p>
+      {/* all users */}
+    </div>
+  ) : (
+    <div>
+      {conversations.map((conversation) => (
+        <ConversationItem
+          key={conversation.id}
+          username={conversation.username}
+          lastMessage={conversation.lastMessage}
+          avatar={conversation.avatar}
+          onClick={() => handleConversationClick(conversation)}
+        />
+      ))}
+    </div>
+  )}
+</div>
     </section>
   );
 };

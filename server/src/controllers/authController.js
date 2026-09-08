@@ -80,7 +80,14 @@ export const login = async (req, res) => {
       expiresIn: "1h",
     });
 
-    return res.status(200).json({ token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({ message: "Login successful" });
   } catch (err) {
     res.status(500).json({ error: "Login failed" });
   }
@@ -88,9 +95,16 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    res.status(201).json({
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+
+    res.status(200).json({
       message: "Logged out successfully",
     });
+    
   } catch (err) {
     res.status(500).json({ error: "cannot fetch" });
   }

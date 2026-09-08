@@ -12,8 +12,8 @@ const Profile = () => {
         <img src="https://github.com/shadcn.png" alt="Profile" />
       </div>
 
-      <p>{user.username}</p>
-      <p>{user.displayName ?? ""}</p>
+      <p>{user?.username}</p>
+      <p>{user?.displayName ?? ""}</p>
       <p>Just another person on Murmur.</p>
       <p>johndoe@email.com</p>
     </main>

@@ -5,6 +5,7 @@ import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import messageRouter from "./routes/messageRoutes.js";
 import conversationRouter from "./routes/conversationRoutes.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Routes
 app.use("/auth", authRouter);

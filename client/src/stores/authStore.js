@@ -1,27 +1,39 @@
-import { login as loginApi, getCurrentUser } from "@/api/auth";
+import {
+  login as loginApi,
+  getCurrentUser as getCurrentUserApi,
+  logout as logoutApi,
+} from "@/api/auth";
+
 import { create } from "zustand";
 
 const useAuthStore = create((set) => ({
-  token: null,
   user: null,
+  isLoading: true,
 
   login: async (formData) => {
-    const data = await loginApi(formData);
+    await loginApi(formData);
 
-    set({ token: data.token });
+    const user = await getCurrentUserApi();
 
-    const user = await getCurrentUser(data.token);
-
-    set({ user });
+    set({ user, isLoading: false });
   },
 
-  getCurrentUser: async (token) => {
-    const data = await getCurrentUser(token);
-
-    set({ user: data });
+  getCurrentUser: async () => {
+    try {
+      const user = await getCurrentUserApi();
+      set({ user });
+    } catch {
+        set({ user: null });
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
-  logout: () => set({ token: null, user: null }),
+  logout: async () => {
+    await logoutApi();
+
+    set({ user: null, isLoading: false });
+  },
 }));
 
 export default useAuthStore;
