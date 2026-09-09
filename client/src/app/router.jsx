@@ -7,7 +7,6 @@ import Profile from "./routes/Profile.jsx";
 import Login from "./routes/Login.jsx";
 import Register from "./routes/Register.jsx";
 
-
 const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
@@ -16,7 +15,9 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
           { path: "/", element: <Home /> },
+          { path: "/conversations/:conversationId", element: <Home />},
           { path: "/profile", element: <Profile /> },
+          { path: "/profile/:userId", element: <Profile />},
         ],
       },
     ],

@@ -3,7 +3,7 @@ const handleResponse = async (res) => {
 
   if (!res.ok) {
     const errorMsg =
-      data?.message || `HTTP ${res.status}: Something went wroong.`;
+      data?.message || `HTTP ${res.status}: Something went wrong.`;
 
     throw new Error(errorMsg);
   }
@@ -36,12 +36,10 @@ export const getCurrentUser = async () => {
 
 // Logout user
 export const logout = async () => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`,
-    {
-      method: "POST",
-      credentials: "include",
-    },
-  );
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
 
   return handleResponse(response);
-}
+};

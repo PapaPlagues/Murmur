@@ -23,7 +23,7 @@ const useAuthStore = create((set) => ({
       const user = await getCurrentUserApi();
       set({ user });
     } catch {
-        set({ user: null });
+      set({ user: null });
     } finally {
       set({ isLoading: false });
     }

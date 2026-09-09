@@ -9,7 +9,7 @@ export const getMessages = async (req, res) => {
     const membership = await prisma.conversationMember.findUnique({
       where: {
         conversationId_userId: {
-          conversationId: Number(conversationId),
+          conversationId: conversationId,
           userId,
         },
       },
@@ -23,7 +23,7 @@ export const getMessages = async (req, res) => {
 
     const messages = await prisma.message.findMany({
       where: {
-        conversationId: Number(conversationId),
+        conversationId: conversationId,
       },
       orderBy: {
         createdAt: "asc",
@@ -85,7 +85,7 @@ export const createMessage = async (req, res) => {
       data: {
         content: content.trim(),
         senderId: userId,
-        conversationId: Number(conversationId),
+        conversationId: conversationId,
       },
       select: {
         id: true,

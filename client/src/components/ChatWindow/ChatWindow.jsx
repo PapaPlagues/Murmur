@@ -1,29 +1,34 @@
 import MessageBubble from "@/features/messages/components/MessageBubble";
 import MessageInput from "@/features/messages/components/MessageInput";
 import UserProfile from "@/features/profile/UserProfile";
+import useAuthStore from "@/stores/authStore";
 
-const ChatWindow = ({ selectedConversation, selectedProfile }) => {
+const ChatWindow = ({ selectedConversation, selectedProfile, onMessage }) => {
+  const currentUser = useAuthStore((state) => state.user);
+
+  const otherMember = selectedConversation?.members.find(
+    (member) => member.userId !== currentUser.id
+  );
+
+
   return (
-       <section className="flex flex-1 flex-col bg-background">
+    <section className="flex flex-1 flex-col bg-background">
       {selectedProfile ? (
-        <UserProfile user={selectedProfile} />
+        <UserProfile user={selectedProfile} onMessage={onMessage} />
       ) : selectedConversation ? (
         <>
           {/* Conversation header */}
           <div className="border-b border-border px-6 py-4">
             <h2 className="font-semibold">
-              {selectedConversation.username}
+              {otherMember?.user.displayName || otherMember?.user.username}
             </h2>
           </div>
 
           {/* Messages */}
           <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-6">
             <div className="mx-auto flex w-full flex-col gap-2">
-              {selectedConversation.messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                />
+              {selectedConversation.messages?.map((message) => (
+                <MessageBubble key={message.id} message={message} />
               ))}
             </div>
           </div>
@@ -33,9 +38,7 @@ const ChatWindow = ({ selectedConversation, selectedProfile }) => {
         </>
       ) : (
         <div className="flex flex-1 flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold">
-            Select a conversation
-          </h2>
+          <h2 className="text-xl font-semibold">Select a conversation</h2>
 
           <p className="mt-2 text-muted-foreground">
             Choose someone from your conversations to start chatting.

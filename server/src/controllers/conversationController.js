@@ -11,7 +11,7 @@ export const createConversation = async (req, res) => {
       });
     }
 
-    if (currentUserId === Number(userId)) {
+    if (currentUserId === userId) {
       return res.status(400).json({
         error: "You cannot start a conversation with yourself",
       });
@@ -20,7 +20,7 @@ export const createConversation = async (req, res) => {
     // Make sure the other user exists
     const user = await prisma.user.findUnique({
       where: {
-        id: Number(userId),
+        id: userId,
       },
     });
 
@@ -28,6 +28,46 @@ export const createConversation = async (req, res) => {
       return res.status(404).json({
         error: "User not found",
       });
+    }
+
+    const existingConversation = await prisma.conversation.findFirst({
+      where: {
+        AND: [
+          {
+            members: {
+              some: {
+                userId: currentUserId,
+              },
+            },
+          },
+          {
+            members: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        members: {
+          select: {
+            userId: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+                displayName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (existingConversation) {
+      return res.status(200).json(existingConversation);
     }
 
     const conversation = await prisma.conversation.create({
@@ -38,7 +78,7 @@ export const createConversation = async (req, res) => {
               userId: currentUserId,
             },
             {
-              userId: Number(userId),
+              userId: userId,
             },
           ],
         },
@@ -120,7 +160,7 @@ export const getConversation = async (req, res) => {
 
     const conversation = await prisma.conversation.findFirst({
       where: {
-        id: Number(conversationId),
+        id: conversationId,
         members: {
           some: {
             userId,

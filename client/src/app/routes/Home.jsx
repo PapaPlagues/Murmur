@@ -1,30 +1,38 @@
-import ConversationList from "@/components/ConversationList/ConversationList";
 import ChatWindow from "@/components/ChatWindow/ChatWindow";
-import { useState } from "react";
+import useConvStore from "@/stores/convStore";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 
 const Home = () => {
-  const [selectedConversation, setSelectedConversation] = useState(null);
-  const [selectedProfile, setSelectedProfile] = useState(null);
+  const { conversationId } = useParams();
 
-  const handleSelectConversation = (conversation) => {
-    setSelectedConversation(conversation);
-    setSelectedProfile(null);
-  };
+  const getConversation = useConvStore((state) => state.getConversation);
 
-  const handleSelectProfile = (user) => {
-    setSelectedProfile(user);
-    setSelectedConversation(null);
-  };
+  const [ selectedConversation, setSelectedConversation ] = useState(null);
+
+  useEffect(() => {
+    if (!conversationId) {
+      setSelectedConversation(null);
+      return;
+    }
+
+    const loadConversation = async () => {
+      try {
+        const conversation = await getConversation(conversationId);
+        setSelectedConversation(conversation);
+      } catch (error) {
+        console.error(error);
+        setSelectedConversation(null);
+      }
+    }; 
+
+    loadConversation();
+  }, [conversationId, getConversation]);
 
   return (
     <>
-      <ConversationList 
-      setSelectedConversation={handleSelectConversation} 
-      setSelectedProfile={handleSelectProfile} 
-      />
       <ChatWindow
-       selectedConversation={selectedConversation}
-       selectedProfile={selectedProfile}
+        selectedConversation={selectedConversation}
       />
     </>
   );

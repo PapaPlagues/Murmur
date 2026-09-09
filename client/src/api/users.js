@@ -3,7 +3,7 @@ const handleResponse = async (res) => {
 
   if (!res.ok) {
     const errorMsg =
-      data?.error || `HTTP ${res.status}: Something went wroong.`;
+      data?.error || `HTTP ${res.status}: Something went wrong.`;
 
     throw new Error(errorMsg);
   }
@@ -13,20 +13,23 @@ const handleResponse = async (res) => {
 
 // GET users
 export const getUsers = async () => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/users/`, {
-        credentials: "include",
-    });
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/users/`, {
+    credentials: "include",
+  });
 
-    return handleResponse(response);
-}
+  return handleResponse(response);
+};
 
 // Update user
 
 // get user
 export const getUser = async (userId) => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
-        credentials: "include",
-    });
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/users/${userId}`,
+    {
+      credentials: "include",
+    },
+  );
 
-    return handleResponse(response);
-}
+  return handleResponse(response);
+};

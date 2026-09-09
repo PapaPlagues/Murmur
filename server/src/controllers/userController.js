@@ -2,7 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 
 export const getUsers = async (req, res) => {
   try {
-     const users = await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       where: {
         id: {
           not: req.user.userId,
@@ -33,7 +33,7 @@ export const getUser = async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: {
-        id: Number(userId),
+        id: userId,
       },
       select: {
         id: true,

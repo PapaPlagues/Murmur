@@ -104,7 +104,6 @@ export const logout = async (req, res) => {
     res.status(200).json({
       message: "Logged out successfully",
     });
-    
   } catch (err) {
     res.status(500).json({ error: "cannot fetch" });
   }
