@@ -134,6 +134,25 @@ export const getConversations = async (req, res) => {
                 },
               },
             },
+            messages: {
+              orderBy: {
+                createdAt: "desc",
+              },
+              take: 1,
+              select: {
+                id: true,
+                content: true,
+                createdAt: true,
+                sender: {
+                  select: {
+                    id: true,
+                    username: true,
+                    displayName: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

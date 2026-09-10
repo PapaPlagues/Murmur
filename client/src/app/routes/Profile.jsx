@@ -12,6 +12,8 @@ const Profile = () => {
   const [user, setUser] = useState(currentUser);
   const [isLoading, setIsLoading] = useState(!!userId);
 
+  const isOwnProfile = !userId || userId === currentUser.id;
+
   useEffect(() => {
     if (!userId) {
       setUser(currentUser);
@@ -58,7 +60,7 @@ const Profile = () => {
   return (
     <UserProfile
      user={user} 
-     isOwnProfile={!userId}
+     isOwnProfile={isOwnProfile}
      onMessage={handleStartConversation} 
     />
   )

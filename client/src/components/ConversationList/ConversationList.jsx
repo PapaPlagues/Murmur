@@ -8,20 +8,26 @@ import useAuthStore from "@/stores/authStore";
 
 const ConversationList = () => {
   const [showUsers, setShowUsers] = useState(false);
-
   const navigate = useNavigate();
 
   const getUsers = useUserStore((state) => state.getUsers);
   const users = useUserStore((state) => state.users);
 
   const conversations = useConvStore((state) => state.conversations);
+  const getConversations = useConvStore((state) => state.getConversations);
+
   const currentUser = useAuthStore((state) => state.user);
+
+ useEffect(() => {
+    getConversations();
+  }, [getConversations]);
 
   useEffect(() => {
     if (showUsers) {
       getUsers();
     }
   }, [showUsers, getUsers]);
+
 
   const handleConversationClick = (conversation) => {
     navigate(`/conversations/${conversation.id}`);
@@ -76,6 +82,7 @@ const ConversationList = () => {
                 <ConversationItem
                   key={conversation.id}
                   username={otherMember.user.username}
+                  lastMessage={conversation.messages[0]?.content}
                   avatar={otherMember.user.avatar}
                   onClick={() => handleConversationClick(conversation)}
                 />

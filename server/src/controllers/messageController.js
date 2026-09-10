@@ -48,7 +48,60 @@ export const getMessages = async (req, res) => {
     console.error(err);
 
     return res.status(500).json({
-      error: "Failed to get message",
+      error: "Failed to get messages",
+    });
+  }
+};
+
+export const getRecentMessage = async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const userId = req.user.userId;
+
+    // Make sure the user belongs to this conversation
+    const membership = await prisma.conversationMember.findUnique({
+      where: {
+        conversationId_userId: {
+          conversationId: conversationId,
+          userId,
+        },
+      },
+    });
+
+    if (!membership) {
+      return res.status(403).json({
+        error: "You are not a member of this conversation",
+      });
+    }
+
+    const messages = await prisma.message.findFirst({
+      where: {
+        conversationId: conversationId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        sender: {
+          select: {
+            id: true,
+            username: true,
+            displayName: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json(messages);
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Failed to get recent message",
     });
   }
 };
@@ -69,7 +122,7 @@ export const createMessage = async (req, res) => {
     const membership = await prisma.conversationMember.findUnique({
       where: {
         conversationId_userId: {
-          conversationId: Number(conversationId),
+          conversationId: conversationId,
           userId,
         },
       },

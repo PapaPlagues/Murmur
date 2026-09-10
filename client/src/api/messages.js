@@ -23,6 +23,10 @@ export const getMessages = async (conversationId) => {
     return handleResponse(response);
 }
 
+export const getRecentMessage = async (conversationId) => {
+    
+}
+
 // post message
 export const createMessage = async (conversationId, formData) => {
     const response = await fetch(
