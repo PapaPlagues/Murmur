@@ -7,7 +7,7 @@ import useConvStore from "@/stores/convStore";
 const Layout = () => {
   const location = useLocation();
 
-  const isOwnProfile = location.pathname === "/profile";
+  const isOwnProfile = location.pathname === "/profile" || location.pathname === "/profile/edit";
 
   const showConversationList = !isOwnProfile;
 

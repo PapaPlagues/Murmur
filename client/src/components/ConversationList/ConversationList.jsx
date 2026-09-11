@@ -82,7 +82,7 @@ const ConversationList = () => {
                 <ConversationItem
                   key={conversation.id}
                   username={otherMember.user.username}
-                  lastMessage={conversation.messages[0]?.content}
+                  lastMessage={conversation.messages[0]?.content ?? null}
                   avatar={otherMember.user.avatar}
                   onClick={() => handleConversationClick(conversation)}
                 />

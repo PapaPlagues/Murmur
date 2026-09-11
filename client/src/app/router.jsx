@@ -4,6 +4,7 @@ import PublicRoute from "./routes/PublicRoute.jsx";
 import Layout from "./Layout.jsx";
 import Home from "./routes/Home.jsx";
 import Profile from "./routes/Profile.jsx";
+import { EditProfile } from "./routes/EditProfile.jsx";
 import Login from "./routes/Login.jsx";
 import Register from "./routes/Register.jsx";
 
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
           { path: "/conversations/:conversationId", element: <Home />},
           { path: "/profile", element: <Profile /> },
           { path: "/profile/:userId", element: <Profile />},
+          { path: "/profile/edit", element: <EditProfile />}
         ],
       },
     ],

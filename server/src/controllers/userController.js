@@ -14,6 +14,7 @@ export const getUsers = async (req, res) => {
         displayName: true,
         avatar: true,
         bio: true,
+        createdAt: true,
       },
     });
 
@@ -41,6 +42,7 @@ export const getUser = async (req, res) => {
         displayName: true,
         avatar: true,
         bio: true,
+        createdAt: true,
       },
     });
 
@@ -62,13 +64,14 @@ export const getUser = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { displayName, avatar, bio } = req.body;
+    const { username, displayName, avatar, bio } = req.body;
 
     const user = await prisma.user.update({
       where: {
         id: req.user.userId,
       },
       data: {
+        username,
         displayName,
         avatar,
         bio,

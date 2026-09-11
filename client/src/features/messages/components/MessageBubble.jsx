@@ -25,7 +25,7 @@ const MessageBubble = ({ message }) => {
               src={message.sender.avatar}
               alt={message.sender.username}
             />
-            <AvatarFallback>ME</AvatarFallback>
+            <AvatarFallback>{message.sender.username?.[0].toUpperCase()}</AvatarFallback>
           </Avatar>
           </Link>
           
@@ -34,7 +34,7 @@ const MessageBubble = ({ message }) => {
         <MessageContent>
           <MessageHeader>
             <Link to={`/profile/${message.sender.id}`}>
-              {message.sender.username}
+                {message.sender.displayName || message.sender.username}
             </Link>
           </MessageHeader>
           <Bubble variant={isCurrentUser ? "default" : "muted"}>

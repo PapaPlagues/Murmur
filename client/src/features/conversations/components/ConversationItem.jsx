@@ -13,7 +13,7 @@ const ConversationItem = ({ username, lastMessage, avatar, onClick }) => {
     >
       <Avatar className="h-11 w-11">
         <AvatarImage src={avatar} alt="profile picture" />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarFallback>{username?.[0].toUpperCase()}</AvatarFallback>
         <AvatarBadge className="bg-green-600 dark:bg-green-800" />
       </Avatar>
 

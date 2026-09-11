@@ -21,6 +21,21 @@ export const getUsers = async () => {
 };
 
 // Update user
+export const updateUser = async (formData) => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/users/me`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(formData)
+    }
+  );
+
+  return handleResponse(response);
+};
 
 // get user
 export const getUser = async (userId) => {
