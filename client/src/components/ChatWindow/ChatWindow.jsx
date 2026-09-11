@@ -9,7 +9,7 @@ const ChatWindow = ({ selectedConversation, selectedProfile, onMessage }) => {
   const currentUser = useAuthStore((state) => state.user);
 
   const otherMember = selectedConversation?.members.find(
-    (member) => member.userId !== currentUser.id
+    (member) => member.userId !== currentUser.id,
   );
 
   const messages = useMessageStore((state) => state.messages);
@@ -23,9 +23,8 @@ const ChatWindow = ({ selectedConversation, selectedProfile, onMessage }) => {
   }, [selectedConversation?.id, getMessages]);
 
   const handleSendMessage = async (content) => {
-    await sendMessage(selectedConversation.id, {content});
+    await sendMessage(selectedConversation.id, { content });
   };
-
 
   return (
     <section className="flex flex-1 flex-col bg-background">
@@ -50,7 +49,7 @@ const ChatWindow = ({ selectedConversation, selectedProfile, onMessage }) => {
           </div>
 
           {/* Input */}
-          <MessageInput onSend={handleSendMessage}/>
+          <MessageInput onSend={handleSendMessage} />
         </>
       ) : (
         <div className="flex flex-1 flex-col items-center justify-center">

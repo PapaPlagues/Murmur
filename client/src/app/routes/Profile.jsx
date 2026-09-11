@@ -50,20 +50,20 @@ const Profile = () => {
   }, [userId, currentUser]);
 
   if (isLoading) {
-    return <div>Loading...</div>
-  };
+    return <div>Loading...</div>;
+  }
 
   if (!user) {
-    return <div>User not found.</div>
+    return <div>User not found.</div>;
   }
 
   return (
     <UserProfile
-     user={user} 
-     isOwnProfile={isOwnProfile}
-     onMessage={handleStartConversation} 
+      user={user}
+      isOwnProfile={isOwnProfile}
+      onMessage={handleStartConversation}
     />
-  )
+  );
 };
 
 export default Profile;

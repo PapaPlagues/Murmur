@@ -7,13 +7,12 @@ import useConvStore from "@/stores/convStore";
 const Layout = () => {
   const location = useLocation();
 
-  const isOwnProfile = location.pathname === "/profile" || location.pathname === "/profile/edit";
+  const isOwnProfile =
+    location.pathname === "/profile" || location.pathname === "/profile/edit";
 
   const showConversationList = !isOwnProfile;
 
-  const createConversation = useConvStore(
-    (state) => state.createConversation
-  );
+  const createConversation = useConvStore((state) => state.createConversation);
 
   const navigate = useNavigate();
 
@@ -29,7 +28,7 @@ const Layout = () => {
       {showConversationList && <ConversationList />}
 
       <main className="flex min-h-screen flex-1 bg-background text-foreground">
-        <Outlet context={{ handleStartConversation }}/>
+        <Outlet context={{ handleStartConversation }} />
       </main>
     </SidebarProvider>
   );

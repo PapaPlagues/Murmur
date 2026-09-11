@@ -19,9 +19,7 @@ const ConversationItem = ({ username, lastMessage, avatar, onClick }) => {
 
       <div>
         <p>{username}</p>
-        <p className="truncate text-sm text-muted-foreground">
-          {lastMessage}
-        </p>
+        <p className="truncate text-sm text-muted-foreground">{lastMessage}</p>
       </div>
     </div>
   );

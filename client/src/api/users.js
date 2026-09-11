@@ -2,8 +2,7 @@ const handleResponse = async (res) => {
   const data = await res.json();
 
   if (!res.ok) {
-    const errorMsg =
-      data?.error || `HTTP ${res.status}: Something went wrong.`;
+    const errorMsg = data?.error || `HTTP ${res.status}: Something went wrong.`;
 
     throw new Error(errorMsg);
   }
@@ -22,17 +21,14 @@ export const getUsers = async () => {
 
 // Update user
 export const updateUser = async (formData) => {
-  const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/users/me`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(formData)
-    }
-  );
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(formData),
+  });
 
   return handleResponse(response);
 };

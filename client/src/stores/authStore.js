@@ -10,7 +10,7 @@ const useAuthStore = create((set) => ({
   user: null,
   isLoading: true,
 
-  setUser: (user) => set({user}),
+  setUser: (user) => set({ user }),
 
   login: async (formData) => {
     await loginApi(formData);

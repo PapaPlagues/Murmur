@@ -18,7 +18,7 @@ const ConversationList = () => {
 
   const currentUser = useAuthStore((state) => state.user);
 
- useEffect(() => {
+  useEffect(() => {
     getConversations();
   }, [getConversations]);
 
@@ -27,7 +27,6 @@ const ConversationList = () => {
       getUsers();
     }
   }, [showUsers, getUsers]);
-
 
   const handleConversationClick = (conversation) => {
     navigate(`/conversations/${conversation.id}`);

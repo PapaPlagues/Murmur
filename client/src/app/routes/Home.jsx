@@ -8,7 +8,7 @@ const Home = () => {
 
   const getConversation = useConvStore((state) => state.getConversation);
 
-  const [ selectedConversation, setSelectedConversation ] = useState(null);
+  const [selectedConversation, setSelectedConversation] = useState(null);
 
   useEffect(() => {
     if (!conversationId) {
@@ -24,16 +24,14 @@ const Home = () => {
         console.error(error);
         setSelectedConversation(null);
       }
-    }; 
+    };
 
     loadConversation();
   }, [conversationId, getConversation]);
 
   return (
     <>
-      <ChatWindow
-        selectedConversation={selectedConversation}
-      />
+      <ChatWindow selectedConversation={selectedConversation} />
     </>
   );
 };

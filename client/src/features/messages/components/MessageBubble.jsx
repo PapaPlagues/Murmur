@@ -20,21 +20,22 @@ const MessageBubble = ({ message }) => {
       <Message align={isCurrentUser ? "end" : "start"}>
         <MessageAvatar>
           <Link to={`/profile/${message.sender.id}`}>
-          <Avatar>
-            <AvatarImage
-              src={message.sender.avatar}
-              alt={message.sender.username}
-            />
-            <AvatarFallback>{message.sender.username?.[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
+            <Avatar>
+              <AvatarImage
+                src={message.sender.avatar}
+                alt={message.sender.username}
+              />
+              <AvatarFallback>
+                {message.sender.username?.[0].toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
           </Link>
-          
         </MessageAvatar>
 
         <MessageContent>
           <MessageHeader>
             <Link to={`/profile/${message.sender.id}`}>
-                {message.sender.displayName || message.sender.username}
+              {message.sender.displayName || message.sender.username}
             </Link>
           </MessageHeader>
           <Bubble variant={isCurrentUser ? "default" : "muted"}>
@@ -42,12 +43,12 @@ const MessageBubble = ({ message }) => {
           </Bubble>
           <MessageFooter>
             <div>
-              Sent{" "} 
+              Sent{" "}
               <span className="font-normal">
                 {new Date(message.createdAt).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
-                  year: "numeric"
+                  year: "numeric",
                 })}
               </span>
             </div>
