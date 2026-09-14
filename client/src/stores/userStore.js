@@ -2,6 +2,7 @@ import {
   getUsers as getUsersApi,
   getUser as getUserApi,
   updateUser as updateUserApi,
+  updateAvatar as updateAvatarApi,
 } from "@/api/users";
 
 import { create } from "zustand";
@@ -24,6 +25,11 @@ const useUserStore = create((set) => ({
     const user = await updateUserApi(formData);
     return user;
   },
+
+  updateAvatar: async (file) => {
+    const user = await updateAvatarApi(file);
+    return user;
+  }
 }));
 
 export default useUserStore;

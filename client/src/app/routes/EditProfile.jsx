@@ -16,6 +16,9 @@ export const EditProfile = () => {
   const setUser = useAuthStore((state) => state.setUser);
   const updateUser = useUserStore((state) => state.updateUser);
 
+  const updateAvatar = useUserStore((state) => state.updateAvatar);
+  const [avatarFile, setAvatarFile] = useState(null);
+
   const [formData, setFormData] = useState({
     displayName: user.displayName || "",
     username: user.username || "",
@@ -36,9 +39,12 @@ export const EditProfile = () => {
     e.preventDefault();
     console.log("Submitted Data:", formData);
 
-    const updatedUser = await updateUser(formData);
-    setUser(updatedUser);
+    let updatedUser = await updateUser(formData);
 
+    if (avatarFile) {
+      updatedUser = await updateAvatar(avatarFile);
+    }
+    setUser(updatedUser);
     navigate("/profile");
   };
 
@@ -54,7 +60,10 @@ export const EditProfile = () => {
             {/* Profile picture */}
             <div className="flex items-center gap-6">
               <Avatar className="h-24 w-24">
-                <AvatarImage src={user?.avatar} alt={user?.username} />
+                <AvatarImage 
+                  src={avatarFile ? URL.createObjectURL(avatarFile) : user?.avatar} 
+                  alt={user?.username} 
+                />
                 <AvatarFallback>
                   {user?.username?.[0].toUpperCase()}
                 </AvatarFallback>
@@ -62,7 +71,12 @@ export const EditProfile = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="avatar">Profile Picture</Label>
-                <Input id="avatar" type="file" accept="image/*" />
+                <Input 
+                id="avatar" 
+                type="file" 
+                accept="image/*"
+                onChange={(e) => setAvatarFile(e.target.files[0] || null)} 
+                />
               </div>
             </div>
 

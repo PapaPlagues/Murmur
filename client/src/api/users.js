@@ -33,6 +33,23 @@ export const updateUser = async (formData) => {
   return handleResponse(response);
 };
 
+// Update avatar
+export const updateAvatar = async (file) => {
+  const formData = new FormData();
+
+  formData.append("avatar", file);
+
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/users/me/avatar`, {
+      method: "PATCH",
+      credentials: "include",
+      body: formData,
+    }
+  );
+
+  return handleResponse(response);
+}
+
 // get user
 export const getUser = async (userId) => {
   const response = await fetch(

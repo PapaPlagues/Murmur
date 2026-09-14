@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const getUsers = async (req, res) => {
   try {
@@ -92,6 +93,59 @@ export const updateProfile = async (req, res) => {
 
     return res.status(500).json({
       error: "Failed to update profile",
+    });
+  }
+};
+
+export const updateAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        error: "Avatar image is required",
+      });
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "murmur/avatars",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+
+      stream.end(req.file.buffer);
+    });
+
+    const user = await prisma.user.update({
+      where: {
+        id: req.user.userId,
+      },
+      data: {
+        avatar: result.secure_url,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        displayName: true,
+        avatar: true,
+        bio: true,
+      },
+    });
+
+    return res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Failed to update avatar",
     });
   }
 };
