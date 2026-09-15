@@ -142,6 +142,7 @@ export const getConversations = async (req, res) => {
               select: {
                 id: true,
                 content: true,
+                imageUrl: true,
                 createdAt: true,
                 sender: {
                   select: {

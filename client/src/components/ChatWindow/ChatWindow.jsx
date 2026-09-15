@@ -22,45 +22,46 @@ const ChatWindow = ({ selectedConversation, selectedProfile, onMessage }) => {
     getMessages(selectedConversation.id);
   }, [selectedConversation?.id, getMessages]);
 
-  const handleSendMessage = async (content) => {
-    await sendMessage(selectedConversation.id, { content });
+  const handleSendMessage = async (content, fileImage) => {
+    await sendMessage(selectedConversation.id, { content, fileImage });
   };
 
   return (
-    <section className="flex flex-1 flex-col bg-background">
-      {selectedProfile ? (
-        <UserProfile user={selectedProfile} onMessage={onMessage} />
-      ) : selectedConversation ? (
-        <>
-          {/* Conversation header */}
-          <div className="border-b border-border px-6 py-4">
-            <h2 className="font-semibold">
-              {otherMember?.user.displayName || otherMember?.user.username}
-            </h2>
-          </div>
+    <section className="flex min-h-0 flex-1 flex-col bg-background">
+  {selectedProfile ? (
+    <UserProfile user={selectedProfile} onMessage={onMessage} />
+  ) : selectedConversation ? (
+    <>
+      {/* Conversation header */}
+      <div className="shrink-0 border-b border-border px-6 py-4">
+        <h2 className="font-semibold">
+          {otherMember?.user.displayName || otherMember?.user.username}
+        </h2>
+      </div>
 
-          {/* Messages */}
-          <div className="flex flex-1 flex-col gap-2 overflow-y-auto p-6">
-            <div className="mx-auto flex w-full flex-col gap-2">
-              {messages?.map((message) => (
-                <MessageBubble key={message.id} message={message} />
-              ))}
-            </div>
-          </div>
-
-          {/* Input */}
-          <MessageInput onSend={handleSendMessage} />
-        </>
-      ) : (
-        <div className="flex flex-1 flex-col items-center justify-center">
-          <h2 className="text-xl font-semibold">Select a conversation</h2>
-
-          <p className="mt-2 text-muted-foreground">
-            Choose someone from your conversations to start chatting.
-          </p>
+      {/* Messages */}
+      <div className="min-h-0 flex-1 overflow-y-auto p-6">
+        <div className="mx-auto flex w-full flex-col gap-2">
+          {messages?.map((message) => (
+            <MessageBubble key={message.id} message={message} />
+          ))}
         </div>
-      )}
-    </section>
+      </div>
+
+      {/* Input */}
+      <div className="shrink-0">
+        <MessageInput onSend={handleSendMessage} />
+      </div>
+    </>
+  ) : (
+    <div className="flex flex-1 flex-col items-center justify-center">
+      <h2 className="text-xl font-semibold">Select a conversation</h2>
+      <p className="mt-2 text-muted-foreground">
+        Choose someone from your conversations to start chatting.
+      </p>
+    </div>
+  )}
+</section>
   );
 };
 

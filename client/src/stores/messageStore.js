@@ -21,8 +21,8 @@ const useMessageStore = create((set) => ({
     }
   },
 
-  sendMessage: async (conversationId, formData) => {
-    const message = await createMessageApi(conversationId, formData);
+  sendMessage: async (conversationId, messageData) => {
+    const message = await createMessageApi(conversationId, messageData);
 
     set((state) => ({
       messages: [...state.messages, message],

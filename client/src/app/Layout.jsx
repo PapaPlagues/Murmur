@@ -27,7 +27,7 @@ const Layout = () => {
 
       {showConversationList && <ConversationList />}
 
-      <main className="flex min-h-screen flex-1 bg-background text-foreground">
+      <main className="flex min-h-0 flex-1 bg-background text-foreground">
         <Outlet context={{ handleStartConversation }} />
       </main>
     </SidebarProvider>

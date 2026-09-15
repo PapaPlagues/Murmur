@@ -39,8 +39,18 @@ const MessageBubble = ({ message }) => {
             </Link>
           </MessageHeader>
           <Bubble variant={isCurrentUser ? "default" : "muted"}>
+          {message.content && (
             <BubbleContent>{message.content}</BubbleContent>
-          </Bubble>
+          )}
+
+          {message.imageUrl && (
+            <img
+              src={message.imageUrl}
+              alt="Message attachment"
+              className="max-w-sm rounded-lg object-cover"
+            />
+          )}
+        </Bubble>
           <MessageFooter>
             <div>
               Sent{" "}

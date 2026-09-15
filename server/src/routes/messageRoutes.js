@@ -5,6 +5,7 @@ import {
   createMessage,
 } from "../controllers/messageController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
+import upload from "../middleware/upload.js";
 
 const messageRouter = express.Router();
 
@@ -14,6 +15,11 @@ messageRouter.get("/:conversationId/messages", authenticate, getMessages);
 
 messageRouter.get("/:conversationId/messages", authenticate, getRecentMessage);
 
-messageRouter.post("/:conversationId/messages", authenticate, createMessage);
+messageRouter.post(
+  "/:conversationId/messages",
+  authenticate,
+  upload.single("image"),
+  createMessage,
+);
 
 export default messageRouter;

@@ -17,7 +17,12 @@ userRouter.get("/", authenticate, getUsers);
 userRouter.patch("/me", authenticate, updateProfile);
 
 // update user avatar
-userRouter.patch("/me/avatar", authenticate, upload.single("avatar"), updateAvatar);
+userRouter.patch(
+  "/me/avatar",
+  authenticate,
+  upload.single("avatar"),
+  updateAvatar,
+);
 
 // get user
 userRouter.get("/:userId", authenticate, getUser);

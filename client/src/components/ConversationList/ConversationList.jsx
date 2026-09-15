@@ -81,7 +81,10 @@ const ConversationList = () => {
                 <ConversationItem
                   key={conversation.id}
                   username={otherMember.user.username}
-                  lastMessage={conversation.messages[0]?.content ?? null}
+                 lastMessage={
+                    conversation.messages?.[0]?.content ||
+                    (conversation.messages?.[0]?.imageUrl ? "📷 Image" : null)
+                  }
                   avatar={otherMember.user.avatar}
                   onClick={() => handleConversationClick(conversation)}
                 />

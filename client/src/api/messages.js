@@ -23,16 +23,23 @@ export const getMessages = async (conversationId) => {
 };
 
 // post message
-export const createMessage = async (conversationId, formData) => {
+export const createMessage = async (conversationId, { content, fileImage }) => {
+  const formData = new FormData();
+
+  if (content?.trim()) {
+    formData.append("content", content.trim());
+  }
+
+  if (fileImage) {
+    formData.append("image", fileImage);
+  }
+
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/conversations/${conversationId}/messages`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       credentials: "include",
-      body: JSON.stringify(formData),
+      body: formData,
     },
   );
 

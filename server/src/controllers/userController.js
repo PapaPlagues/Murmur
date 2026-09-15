@@ -117,7 +117,7 @@ export const updateAvatar = async (req, res) => {
           } else {
             resolve(result);
           }
-        }
+        },
       );
 
       stream.end(req.file.buffer);

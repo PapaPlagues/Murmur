@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const getMessages = async (req, res) => {
   try {
@@ -31,6 +32,7 @@ export const getMessages = async (req, res) => {
       select: {
         id: true,
         content: true,
+        imageUrl: true,
         createdAt: true,
         sender: {
           select: {
@@ -40,6 +42,9 @@ export const getMessages = async (req, res) => {
             avatar: true,
           },
         },
+      },
+      orderBy: {
+        createdAt: "asc",
       },
     });
 
@@ -84,6 +89,7 @@ export const getRecentMessage = async (req, res) => {
       select: {
         id: true,
         content: true,
+        imageUrl: true,
         createdAt: true,
         sender: {
           select: {
@@ -112,9 +118,10 @@ export const createMessage = async (req, res) => {
     const { content } = req.body;
     const userId = req.user.userId;
 
-    if (!content || !content.trim()) {
+    // Message must contain either text or an image
+    if (!content?.trim() && !req.file) {
       return res.status(400).json({
-        error: "Message content is required",
+        error: "Message must contain text or an image",
       });
     }
 
@@ -134,15 +141,50 @@ export const createMessage = async (req, res) => {
       });
     }
 
+    let imageUrl = null;
+
+    // Upload image to CLoudinary if one was provided
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "murmur/messages",
+            resource_type: "image",
+          },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          },
+        );
+
+        stream.end(req.file.buffer);
+      });
+
+      imageUrl = result.secure_url;
+    }
+
     const message = await prisma.message.create({
       data: {
-        content: content.trim(),
-        senderId: userId,
-        conversationId: conversationId,
+        content: content?.trim() || null,
+        imageUrl,
+        sender: {
+          connect: {
+            id: userId,
+          },
+        },
+        conversation: {
+          connect: {
+            id: conversationId,
+          },
+        },
       },
       select: {
         id: true,
         content: true,
+        imageUrl: true,
         createdAt: true,
         sender: {
           select: {
