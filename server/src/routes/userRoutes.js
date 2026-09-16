@@ -4,6 +4,7 @@ import {
   getUser,
   updateProfile,
   updateAvatar,
+  heartbeat,
 } from "../controllers/userController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
@@ -26,5 +27,8 @@ userRouter.patch(
 
 // get user
 userRouter.get("/:userId", authenticate, getUser);
+
+// check if user is online
+userRouter.post("/heartbeat", authenticate, heartbeat);
 
 export default userRouter;

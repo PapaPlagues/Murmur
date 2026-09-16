@@ -4,17 +4,29 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
+import { isUserOnline } from "@/utils/presence";
 
-const ConversationItem = ({ username, lastMessage, avatar, onClick }) => {
+const ConversationItem = ({ username, lastMessage, avatar, lastSeenAt, onClick }) => {
+
+  const online = isUserOnline(lastSeenAt);
+
   return (
     <div
       className="flex items-center gap-3 p-3 hover:bg-muted cursor-pointer"
       onClick={onClick}
     >
-      <Avatar className="h-11 w-11">
+      <Avatar>
         <AvatarImage src={avatar} alt="profile picture" />
         <AvatarFallback>{username?.[0].toUpperCase()}</AvatarFallback>
-        <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+
+        <AvatarBadge
+          className={
+            online
+              ? "bg-green-600 dark:bg-green-800"
+              : "bg-muted-foreground"
+          }
+        />
+        
       </Avatar>
 
       <div>

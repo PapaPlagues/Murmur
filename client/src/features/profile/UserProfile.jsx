@@ -1,10 +1,13 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage, AvatarBadge } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { isUserOnline } from "@/utils/presence";
 import { useNavigate } from "react-router";
 
 const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
   const navigate = useNavigate();
+
+  const online = isUserOnline(user?.lastSeenAt);
 
   return (
     <main className="flex flex-1 justify-center overflow-y-auto bg-background">
@@ -27,6 +30,15 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
               <AvatarFallback>
                 {user?.username?.[0].toUpperCase()}
               </AvatarFallback>
+
+              <AvatarBadge
+                className={
+                  online
+                    ? "bg-green-600 dark:bg-green-800"
+                    : "bg-muted-foreground"
+                }
+              />
+
             </Avatar>
           </div>
         </div>

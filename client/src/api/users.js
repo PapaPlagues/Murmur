@@ -61,3 +61,16 @@ export const getUser = async (userId) => {
 
   return handleResponse(response);
 };
+
+// update user online status
+export const sendHeartbeat = async () => {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/users/heartbeat`,
+    {
+      method: "POST",
+      credentials: "include",
+    },
+  );
+
+  return handleResponse(response);
+}

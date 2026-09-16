@@ -125,6 +125,7 @@ export const getCurrentUser = async (req, res) => {
         avatar: true,
         bio: true,
         createdAt: true,
+        lastSeenAt: true,
       },
     });
 

@@ -1,9 +1,9 @@
-import MessageBubble from "@/features/messages/components/MessageBubble";
 import MessageInput from "@/features/messages/components/MessageInput";
 import UserProfile from "@/features/profile/UserProfile";
 import useAuthStore from "@/stores/authStore";
 import useMessageStore from "@/stores/messageStore";
 import { useEffect } from "react";
+import { MessageList } from "@/features/messages/components/MessageList";
 
 const ChatWindow = ({ selectedConversation, selectedProfile, onMessage }) => {
   const currentUser = useAuthStore((state) => state.user);
@@ -40,13 +40,7 @@ const ChatWindow = ({ selectedConversation, selectedProfile, onMessage }) => {
       </div>
 
       {/* Messages */}
-      <div className="min-h-0 flex-1 overflow-y-auto p-6">
-        <div className="mx-auto flex w-full flex-col gap-2">
-          {messages?.map((message) => (
-            <MessageBubble key={message.id} message={message} />
-          ))}
-        </div>
-      </div>
+      <MessageList messages={messages} />
 
       {/* Input */}
       <div className="shrink-0">

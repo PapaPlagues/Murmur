@@ -16,6 +16,7 @@ model User {
   avatar       String?
   bio          String?
   createdAt    DateTime @default(now())
+  lastSeenAt   DateTime? 
 
   messages    Message[]
   memberships ConversationMember[]

@@ -16,6 +16,7 @@ export const getUsers = async (req, res) => {
         avatar: true,
         bio: true,
         createdAt: true,
+        lastSeenAt: true,
       },
     });
 
@@ -44,6 +45,7 @@ export const getUser = async (req, res) => {
         avatar: true,
         bio: true,
         createdAt: true,
+        lastSeenAt: true,
       },
     });
 
@@ -149,3 +151,28 @@ export const updateAvatar = async (req, res) => {
     });
   }
 };
+
+export const heartbeat = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        lastSeenAt: new Date(),
+      }
+    });
+
+    return res.status(200).json({
+      lastSeenAt: user.lastSeenAt,
+    });
+
+  } catch(err) {
+    console.error(err);
+    return res.status(500).json({
+      error: "Failed to update presence",
+    });
+  }
+}

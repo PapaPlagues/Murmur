@@ -18,6 +18,22 @@ const ConversationList = () => {
 
   const currentUser = useAuthStore((state) => state.user);
 
+  // Search Bar
+  const [search, setSearch] = useState("");
+
+  const filteredUsers = users.filter((user) => 
+  user.username.toLowerCase().includes(search.toLowerCase()))
+
+  const filteredConversations = conversations.filter((conversation) => {
+    const otherMember = conversation.members.find(
+                (member) => member.userId !== currentUser.id,
+              );
+    return otherMember.user.username.toLowerCase().includes(search.toLowerCase());
+  });
+
+  const filteredResults = showUsers ? filteredUsers : filteredConversations;
+
+
   useEffect(() => {
     getConversations();
   }, [getConversations]);
@@ -54,25 +70,30 @@ const ConversationList = () => {
       </div>
 
       <div className="mt-4">
-        <ConversationSearch />
+        <ConversationSearch
+          search={search}
+          setSearch={setSearch}
+          filteredResults={filteredResults}
+        />
       </div>
 
       <div className="my-7">
         {showUsers ? (
           <div>
             <p>Users</p>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <ConversationItem
                 key={user.id}
                 username={user.username}
                 avatar={user.avatar}
+                lastSeenAt={user.lastSeenAt}
                 onClick={() => handleProfileClick(user)}
               />
             ))}
           </div>
         ) : (
           <div>
-            {conversations.map((conversation) => {
+            {filteredConversations.map((conversation) => {
               const otherMember = conversation.members.find(
                 (member) => member.userId !== currentUser.id,
               );
@@ -81,11 +102,12 @@ const ConversationList = () => {
                 <ConversationItem
                   key={conversation.id}
                   username={otherMember.user.username}
-                 lastMessage={
-                    conversation.messages?.[0]?.content ||
-                    (conversation.messages?.[0]?.imageUrl ? "📷 Image" : null)
-                  }
+                  lastMessage={
+                      conversation.messages?.[0]?.content ||
+                      (conversation.messages?.[0]?.imageUrl ? "📷 Image" : null)
+                    }
                   avatar={otherMember.user.avatar}
+                  lastSeenAt={otherMember.user.lastSeenAt}
                   onClick={() => handleConversationClick(conversation)}
                 />
               );

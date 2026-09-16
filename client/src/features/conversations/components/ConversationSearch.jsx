@@ -5,16 +5,21 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 
-const ConversationSearch = () => {
+const ConversationSearch = ({ search, setSearch, filteredResults }) => {
   return (
     <InputGroup className="max-w-xs">
-      <InputGroupInput placeholder="Search..." />
+      <InputGroupInput
+      type="text"
+      placeholder="Search..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      />
 
       <InputGroupAddon>
         <Search />
       </InputGroupAddon>
 
-      <InputGroupAddon align="inline-end">12 results</InputGroupAddon>
+      <InputGroupAddon align="inline-end">{search && filteredResults.length + ' results'}</InputGroupAddon>
     </InputGroup>
   );
 };

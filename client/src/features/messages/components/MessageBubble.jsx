@@ -10,7 +10,7 @@ import {
 import useAuthStore from "@/stores/authStore";
 import { Link } from "react-router";
 
-const MessageBubble = ({ message }) => {
+const MessageBubble = ({ message, showSender, showTime }) => {
   const currentUser = useAuthStore((state) => state.user);
 
   const isCurrentUser = message.sender.id === currentUser.id;
@@ -18,7 +18,8 @@ const MessageBubble = ({ message }) => {
   return (
     <>
       <Message align={isCurrentUser ? "end" : "start"}>
-        <MessageAvatar>
+
+        <MessageAvatar className={!showSender ? "invisible" : undefined}>
           <Link to={`/profile/${message.sender.id}`}>
             <Avatar>
               <AvatarImage
@@ -33,11 +34,14 @@ const MessageBubble = ({ message }) => {
         </MessageAvatar>
 
         <MessageContent>
-          <MessageHeader>
-            <Link to={`/profile/${message.sender.id}`}>
-              {message.sender.displayName || message.sender.username}
-            </Link>
-          </MessageHeader>
+          {showSender && (
+            <MessageHeader>
+              <Link to={`/profile/${message.sender.id}`}>
+                {message.sender.displayName || message.sender.username}
+              </Link>
+            </MessageHeader>
+          )}
+          
           <Bubble variant={isCurrentUser ? "default" : "muted"}>
           {message.content && (
             <BubbleContent>{message.content}</BubbleContent>
@@ -51,19 +55,17 @@ const MessageBubble = ({ message }) => {
             />
           )}
         </Bubble>
-          <MessageFooter>
-            <div>
-              Sent{" "}
-              <span className="font-normal">
-                {new Date(message.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
-          </MessageFooter>
+
+          {showTime && (
+            <MessageFooter>
+              {new Date(message.createdAt).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </MessageFooter>
+          )}
         </MessageContent>
+
       </Message>
     </>
   );
