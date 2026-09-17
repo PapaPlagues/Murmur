@@ -123,6 +123,7 @@ export const getCurrentUser = async (req, res) => {
         email: true,
         displayName: true,
         avatar: true,
+        banner: true,
         bio: true,
         createdAt: true,
         lastSeenAt: true,

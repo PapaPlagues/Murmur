@@ -14,6 +14,7 @@ export const getUsers = async (req, res) => {
         username: true,
         displayName: true,
         avatar: true,
+        banner: true,
         bio: true,
         createdAt: true,
         lastSeenAt: true,
@@ -43,6 +44,7 @@ export const getUser = async (req, res) => {
         username: true,
         displayName: true,
         avatar: true,
+        banner: true,
         bio: true,
         createdAt: true,
         lastSeenAt: true,
@@ -67,7 +69,7 @@ export const getUser = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { username, displayName, avatar, bio } = req.body;
+    const { username, displayName, avatar, banner, bio } = req.body;
 
     const user = await prisma.user.update({
       where: {
@@ -77,6 +79,7 @@ export const updateProfile = async (req, res) => {
         username,
         displayName,
         avatar,
+        banner,
         bio,
       },
       select: {
@@ -85,6 +88,7 @@ export const updateProfile = async (req, res) => {
         email: true,
         displayName: true,
         avatar: true,
+        banner: true,
         bio: true,
       },
     });
@@ -138,6 +142,7 @@ export const updateAvatar = async (req, res) => {
         email: true,
         displayName: true,
         avatar: true,
+        banner: true,
         bio: true,
       },
     });
@@ -148,6 +153,61 @@ export const updateAvatar = async (req, res) => {
 
     return res.status(500).json({
       error: "Failed to update avatar",
+    });
+  }
+};
+
+// Update Banner
+export const updateBanner = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        error: "Banner image is required",
+      });
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "murmur/banners",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        },
+      );
+
+      stream.end(req.file.buffer);
+    });
+
+    const user = await prisma.user.update({
+      where: {
+        id: req.user.userId,
+      },
+      data: {
+        banner: result.secure_url,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        displayName: true,
+        avatar: true,
+        banner: true,
+        bio: true,
+      },
+    });
+
+    return res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Failed to update banner",
     });
   }
 };

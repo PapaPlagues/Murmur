@@ -7,6 +7,10 @@ import { useNavigate } from "react-router";
 const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
   const navigate = useNavigate();
 
+    if (!user) {
+      return null;
+    }
+
   const online = isUserOnline(user?.lastSeenAt);
 
   return (

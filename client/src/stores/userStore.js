@@ -3,6 +3,7 @@ import {
   getUser as getUserApi,
   updateUser as updateUserApi,
   updateAvatar as updateAvatarApi,
+  updateBanner as updateBannerApi,
 } from "@/api/users";
 
 import { create } from "zustand";
@@ -28,6 +29,11 @@ const useUserStore = create((set) => ({
 
   updateAvatar: async (file) => {
     const user = await updateAvatarApi(file);
+    return user;
+  },
+
+  updateBanner: async (file) => {
+    const user = await updateBannerApi(file);
     return user;
   }
 }));

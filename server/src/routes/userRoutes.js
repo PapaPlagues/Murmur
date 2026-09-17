@@ -5,6 +5,7 @@ import {
   updateProfile,
   updateAvatar,
   heartbeat,
+  updateBanner,
 } from "../controllers/userController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
@@ -23,6 +24,14 @@ userRouter.patch(
   authenticate,
   upload.single("avatar"),
   updateAvatar,
+);
+
+// update user banner
+userRouter.patch(
+  "/me/banner",
+  authenticate,
+  upload.single("banner"),
+  updateBanner,
 );
 
 // get user

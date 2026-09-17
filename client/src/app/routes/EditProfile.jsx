@@ -19,6 +19,10 @@ export const EditProfile = () => {
   const updateAvatar = useUserStore((state) => state.updateAvatar);
   const [avatarFile, setAvatarFile] = useState(null);
 
+  const updateBanner = useUserStore((state) => state.updateBanner);
+  const [bannerFile, setBannerFile] = useState(null);
+
+
   const [formData, setFormData] = useState({
     displayName: user.displayName || "",
     username: user.username || "",
@@ -44,6 +48,11 @@ export const EditProfile = () => {
     if (avatarFile) {
       updatedUser = await updateAvatar(avatarFile);
     }
+
+    if (bannerFile) {
+      updatedUser = await updateBanner(bannerFile);  
+    }
+
     setUser(updatedUser);
     navigate("/profile");
   };
@@ -57,6 +66,27 @@ export const EditProfile = () => {
           </CardHeader>
 
           <CardContent className="space-y-8">
+            {/* Banner */}
+            <div className="">
+              <div className="aspect-[4/1] w-full overflow-hidden rounded-lg bg-muted">
+                <img 
+                src={bannerFile ? URL.createObjectURL(bannerFile) : user?.banner || "https://placehold.co/1200x300"} 
+                alt="Banner image" 
+                className="h-full w-full object-cover"
+                />
+              </div>
+
+              <div className="space-y-2 m-4">
+                <Label htmlFor="banner">Banner</Label>
+                <Input 
+                  id="banner"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setBannerFile(e.target.files[0] || null)}
+                />
+              </div>
+            </div>
+
             {/* Profile picture */}
             <div className="flex items-center gap-6">
               <Avatar className="h-24 w-24">
@@ -116,7 +146,7 @@ export const EditProfile = () => {
 
             {/* Actions */}
             <div className="flex justify-end gap-3 py-4">
-              <Button variant="outline" onClick={() => navigate("/profile")}>
+              <Button type="button" variant="outline" onClick={() => navigate("/profile")}>
                 Cancel
               </Button>
 

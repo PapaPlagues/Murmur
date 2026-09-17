@@ -50,6 +50,23 @@ export const updateAvatar = async (file) => {
   return handleResponse(response);
 }
 
+// Update banner
+export const updateBanner = async (file) => {
+  const formData = new FormData();
+
+  formData.append("banner", file);
+
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/users/me/banner`, {
+      method: "PATCH",
+      credentials: "include",
+      body: formData,
+    }
+  );
+
+  return handleResponse(response);
+}
+
 // get user
 export const getUser = async (userId) => {
   const response = await fetch(
