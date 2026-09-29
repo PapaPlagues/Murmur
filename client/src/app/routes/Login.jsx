@@ -14,6 +14,7 @@ const Login = () => {
   });
 
   const [message, setMessage] = useState("");
+  const [messageIsError, setMessageIsError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const Login = () => {
 
     setLoading(true);
     setMessage("");
+    setMessageIsError(false);
 
     try {
       await loginUser(formData);
@@ -42,6 +44,7 @@ const Login = () => {
       navigate("/");
     } catch {
       setMessage("An error occured. Please try again.");
+      setMessageIsError(true);
     } finally {
       setLoading(false);
     }
@@ -88,7 +91,7 @@ const Login = () => {
             </Field>
           </FieldGroup>
 
-          <Button className="w-full" type="submit">
+          <Button className="w-full" type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </Button>
 
@@ -103,7 +106,16 @@ const Login = () => {
         </FieldSet>
       </form>
 
-      <div className="p-6">{message && <p>{message}</p>}</div>
+      <div className="p-6">
+        {message && (
+          <p
+            role={messageIsError ? "alert" : "status"}
+            className={`text-center text-sm ${messageIsError ? "text-destructive" : "text-muted-foreground"}`}
+          >
+            {message}
+          </p>
+        )}
+      </div>
     </main>
   );
 };

@@ -3,12 +3,15 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { MessageSquare, User, Ghost } from "lucide-react";
 import { Link } from "react-router";
 import { LogOutButton } from "./LogoutButton";
 
 const AppSidebar = () => {
+  const { setOpenMobile } = useSidebar();
+
   return (
     <Sidebar className="border-border text-foreground">
       <SidebarHeader className="border-b border-border bg-sidebar p-4">
@@ -21,6 +24,7 @@ const AppSidebar = () => {
       <SidebarContent className="bg-sidebar p-4">
         <Link
           to="/"
+          onClick={() => setOpenMobile(false)}
           className="flex w-full items-center gap-3 rounded-lg p-3 hover:bg-muted"
         >
           <MessageSquare size={20} />
@@ -29,6 +33,7 @@ const AppSidebar = () => {
 
         <Link
           to="/profile"
+          onClick={() => setOpenMobile(false)}
           className="mt-2 flex w-full items-center gap-3 rounded-lg p-3 hover:bg-muted"
         >
           <User size={20} />

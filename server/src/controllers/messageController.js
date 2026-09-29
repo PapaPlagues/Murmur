@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
 import cloudinary from "../config/cloudinary.js";
+import { isAllowedImageUpload } from "../utils/imageUpload.js";
 
 export const getMessages = async (req, res) => {
   try {
@@ -118,6 +119,13 @@ export const createMessage = async (req, res) => {
     const { content } = req.body;
     const userId = req.user.userId;
 
+    if (
+      content != null &&
+      (typeof content !== "string" || content.length > 10000)
+    ) {
+      return res.status(400).json({ error: "Invalid message content" });
+    }
+
     // Message must contain either text or an image
     if (!content?.trim() && !req.file) {
       return res.status(400).json({
@@ -139,6 +147,10 @@ export const createMessage = async (req, res) => {
       return res.status(403).json({
         error: "You are not a member of this conversation",
       });
+    }
+
+    if (req.file && !(await isAllowedImageUpload(req.file))) {
+      return res.status(415).json({ error: "Unsupported message image contents" });
     }
 
     let imageUrl = null;

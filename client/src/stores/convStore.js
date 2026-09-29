@@ -6,17 +6,31 @@ import {
 
 import { create } from "zustand";
 
+let latestConversationsLoadId = 0;
+
 const useConvStore = create((set) => ({
   conversations: [],
-  isLoading: false,
+  loadStatus: "idle",
+  loadError: null,
 
   getConversations: async () => {
-    set({ isLoading: true });
+    const loadId = ++latestConversationsLoadId;
+    set({ loadStatus: "loading", loadError: null });
+
     try {
       const conversations = await getConversationsApi();
-      set({ conversations });
-    } finally {
-      set({ isLoading: false });
+      if (loadId === latestConversationsLoadId) {
+        set({ conversations, loadStatus: "ready" });
+      }
+      return true;
+    } catch (error) {
+      if (loadId === latestConversationsLoadId) {
+        set({
+          loadStatus: "error",
+          loadError: error.message || "Unable to load conversations.",
+        });
+      }
+      return false;
     }
   },
 

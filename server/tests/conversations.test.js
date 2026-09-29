@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
+import { randomUUID } from "node:crypto";
 import request from "supertest";
 import jwt from "jsonwebtoken";
 
@@ -43,7 +44,7 @@ describe("Conversations", () => {
 
     const response = await request(app)
       .post("/conversations")
-      .set("Authorization", `Bearer ${tester.token}`)
+      .set("Cookie", `token=${tester.token}`)
       .send({
         userId: alice.user.id,
       });
@@ -65,11 +66,23 @@ describe("Conversations", () => {
 
     const response = await request(app)
       .post("/conversations")
-      .set("Authorization", `Bearer ${tester.token}`)
+      .set("Cookie", `token=${tester.token}`)
       .send({});
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe("User ID is required");
+  });
+
+  it("rejects a malformed conversation target ID", async () => {
+    const tester = await createUser("Tester", "tester@example.com");
+
+    const response = await request(app)
+      .post("/conversations")
+      .set("Cookie", `token=${tester.token}`)
+      .send({ userId: 123 });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe("Invalid user ID");
   });
 
   it("rejects a conversation with yourself", async () => {
@@ -77,7 +90,7 @@ describe("Conversations", () => {
 
     const response = await request(app)
       .post("/conversations")
-      .set("Authorization", `Bearer ${tester.token}`)
+      .set("Cookie", `token=${tester.token}`)
       .send({
         userId: tester.user.id,
       });
@@ -93,9 +106,9 @@ describe("Conversations", () => {
 
     const response = await request(app)
       .post("/conversations")
-      .set("Authorization", `Bearer ${tester.token}`)
+      .set("Cookie", `token=${tester.token}`)
       .send({
-        userId: 99999,
+        userId: randomUUID(),
       });
 
     expect(response.status).toBe(404);
@@ -109,14 +122,14 @@ describe("Conversations", () => {
 
     await request(app)
       .post("/conversations")
-      .set("Authorization", `Bearer ${tester.token}`)
+      .set("Cookie", `token=${tester.token}`)
       .send({
         userId: alice.user.id,
       });
 
     const response = await request(app)
       .get("/conversations")
-      .set("Authorization", `Bearer ${tester.token}`);
+      .set("Cookie", `token=${tester.token}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(1);
@@ -130,7 +143,7 @@ describe("Conversations", () => {
 
     const createResponse = await request(app)
       .post("/conversations")
-      .set("Authorization", `Bearer ${tester.token}`)
+      .set("Cookie", `token=${tester.token}`)
       .send({
         userId: alice.user.id,
       });
@@ -139,7 +152,7 @@ describe("Conversations", () => {
 
     const response = await request(app)
       .get(`/conversations/${conversationId}`)
-      .set("Authorization", `Bearer ${tester.token}`);
+      .set("Cookie", `token=${tester.token}`);
 
     expect(response.status).toBe(200);
     expect(response.body.id).toBe(conversationId);
@@ -153,7 +166,7 @@ describe("Conversations", () => {
 
     const conversationResponse = await request(app)
       .post("/conversations")
-      .set("Authorization", `Bearer ${tester.token}`)
+      .set("Cookie", `token=${tester.token}`)
       .send({
         userId: alice.user.id,
       });
@@ -164,7 +177,7 @@ describe("Conversations", () => {
 
     const response = await request(app)
       .get(`/conversations/${conversationId}`)
-      .set("Authorization", `Bearer ${bob.token}`);
+      .set("Cookie", `token=${bob.token}`);
 
     expect(response.status).toBe(404);
     expect(response.body.error).toBe("Conversation not found");
@@ -175,5 +188,33 @@ describe("Conversations", () => {
 
     expect(response.status).toBe(401);
     expect(response.body.error).toBe("Authentication required");
+  });
+
+  it("returns an empty list when the user has no conversations", async () => {
+    const tester = await createUser("Tester", "tester@example.com");
+
+    const response = await request(app)
+      .get("/conversations")
+      .set("Cookie", `token=${tester.token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  it("returns the existing conversation when starting the same conversation again", async () => {
+    const tester = await createUser("Tester", "tester@example.com");
+    const alice = await createUser("Alice", "alice@example.com");
+    const createRequest = () =>
+      request(app)
+        .post("/conversations")
+        .set("Cookie", `token=${tester.token}`)
+        .send({ userId: alice.user.id });
+
+    const firstResponse = await createRequest();
+    const secondResponse = await createRequest();
+
+    expect(firstResponse.status).toBe(201);
+    expect(secondResponse.status).toBe(200);
+    expect(secondResponse.body.id).toBe(firstResponse.body.id);
   });
 });

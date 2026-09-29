@@ -5,12 +5,13 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 
-const ConversationSearch = ({ search, setSearch, filteredResults }) => {
+const ConversationSearch = ({ search, setSearch, filteredResults, label }) => {
   return (
     <InputGroup className="max-w-xs">
       <InputGroupInput
       type="text"
       placeholder="Search..."
+      aria-label={label}
       value={search}
       onChange={(e) => setSearch(e.target.value)}
       />
@@ -19,7 +20,13 @@ const ConversationSearch = ({ search, setSearch, filteredResults }) => {
         <Search />
       </InputGroupAddon>
 
-      <InputGroupAddon align="inline-end">{search && filteredResults.length + ' results'}</InputGroupAddon>
+      <InputGroupAddon align="inline-end">
+        {search && (
+          <span aria-live="polite">
+            {filteredResults.length} {filteredResults.length === 1 ? "result" : "results"}
+          </span>
+        )}
+      </InputGroupAddon>
     </InputGroup>
   );
 };

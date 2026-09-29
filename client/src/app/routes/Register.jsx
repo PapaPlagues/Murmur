@@ -22,6 +22,7 @@ const Register = () => {
   });
 
   const [message, setMessage] = useState("");
+  const [messageIsError, setMessageIsError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setMessageIsError(false);
 
     try {
       const response = await fetch(
@@ -59,9 +61,11 @@ const Register = () => {
         navigate("/login");
       } else {
         setMessage(data.message || "Registration failed.");
+        setMessageIsError(true);
       }
     } catch {
       setMessage("An error occured. Please try again.");
+      setMessageIsError(true);
     } finally {
       setLoading(false);
     }
@@ -163,7 +167,7 @@ const Register = () => {
             </Field>
           </FieldGroup>
 
-          <Button className="w-full" type="submit">
+          <Button className="w-full" type="submit" disabled={loading}>
             {loading ? "Registering..." : "Create Account"}
           </Button>
 
@@ -178,7 +182,16 @@ const Register = () => {
         </FieldSet>
       </form>
 
-      <div className="p-6">{message && <p>{message}</p>}</div>
+      <div className="p-6">
+        {message && (
+          <p
+            role={messageIsError ? "alert" : "status"}
+            className={`text-center text-sm ${messageIsError ? "text-destructive" : "text-muted-foreground"}`}
+          >
+            {message}
+          </p>
+        )}
+      </div>
     </main>
   );
 };

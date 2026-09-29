@@ -5,28 +5,48 @@ import {
 
 import { create } from "zustand";
 
+let latestLoadId = 0;
+
 const useMessageStore = create((set) => ({
   messages: [],
-  isLoading: false,
+  conversationId: null,
+  loadStatus: "idle",
+  loadError: null,
 
   getMessages: async (conversationId) => {
-    set({ isLoading: true });
+    const loadId = ++latestLoadId;
+    set({
+      messages: [],
+      conversationId,
+      loadStatus: "loading",
+      loadError: null,
+    });
+
     try {
       const messages = await getMessagesApi(conversationId);
-      set({ messages });
+      if (loadId === latestLoadId) {
+        set({ messages, loadStatus: "ready" });
+      }
+      return true;
     } catch (err) {
-      console.error(err);
-    } finally {
-      set({ isLoading: false });
+      if (loadId === latestLoadId) {
+        set({
+          loadStatus: "error",
+          loadError: err.message || "Unable to load messages.",
+        });
+      }
+      return false;
     }
   },
 
   sendMessage: async (conversationId, messageData) => {
     const message = await createMessageApi(conversationId, messageData);
 
-    set((state) => ({
-      messages: [...state.messages, message],
-    }));
+    set((state) =>
+      state.conversationId === conversationId
+        ? { messages: [...state.messages, message] }
+        : state,
+    );
 
     return message;
   },

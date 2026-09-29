@@ -3,9 +3,11 @@ const handleResponse = async (res) => {
 
   if (!res.ok) {
     const errorMsg =
-      data?.message || `HTTP ${res.status}: Something went wrong.`;
+      data?.error || data?.message || `HTTP ${res.status}: Something went wrong.`;
 
-    throw new Error(errorMsg);
+    const error = new Error(errorMsg);
+    error.status = res.status;
+    throw error;
   }
 
   return data;

@@ -51,7 +51,7 @@ const MessageBubble = ({ message, showSender, showTime }) => {
             <img
               src={message.imageUrl}
               alt="Message attachment"
-              className="max-w-sm rounded-lg object-cover"
+              className="h-auto max-w-full rounded-lg object-cover sm:max-w-sm"
             />
           )}
         </Bubble>

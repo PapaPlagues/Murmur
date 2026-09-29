@@ -6,6 +6,7 @@ import {
 } from "../controllers/messageController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
+import { messageWriteLimiter } from "../middleware/writeRateLimit.js";
 
 const messageRouter = express.Router();
 
@@ -18,6 +19,7 @@ messageRouter.get("/:conversationId/messages", authenticate, getRecentMessage);
 messageRouter.post(
   "/:conversationId/messages",
   authenticate,
+  messageWriteLimiter,
   upload.single("image"),
   createMessage,
 );

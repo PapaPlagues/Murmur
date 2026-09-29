@@ -18,4 +18,14 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    files: [
+      "src/components/ui/button.jsx",
+      "src/components/ui/marker.jsx",
+      "src/components/ui/sidebar.jsx",
+    ],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ]);

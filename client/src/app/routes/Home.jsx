@@ -8,31 +8,67 @@ const Home = () => {
 
   const getConversation = useConvStore((state) => state.getConversation);
 
-  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [conversationState, setConversationState] = useState({
+    conversationId: null,
+    retryCount: -1,
+    status: "idle",
+    conversation: null,
+    error: null,
+  });
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    if (!conversationId) {
-      setSelectedConversation(null);
-      return;
-    }
+    if (!conversationId) return;
+
+    let active = true;
 
     const loadConversation = async () => {
       try {
         const conversation = await getConversation(conversationId);
-        setSelectedConversation(conversation);
+        if (active) {
+          setConversationState({
+            conversationId,
+            retryCount,
+            status: "ready",
+            conversation,
+            error: null,
+          });
+        }
       } catch (error) {
-        console.error(error);
-        setSelectedConversation(null);
+        if (active) {
+          setConversationState({
+            conversationId,
+            retryCount,
+            status: error.status === 404 ? "not-found" : "error",
+            conversation: null,
+            error: error.message || "Unable to load this conversation.",
+          });
+        }
       }
     };
 
     loadConversation();
-  }, [conversationId, getConversation]);
+    return () => {
+      active = false;
+    };
+  }, [conversationId, getConversation, retryCount]);
+
+  const isCurrentConversation =
+    conversationState.conversationId === conversationId &&
+    conversationState.retryCount === retryCount;
+  const status = conversationId
+    ? isCurrentConversation
+      ? conversationState.status
+      : "loading"
+    : "idle";
 
   return (
-    <>
-      <ChatWindow selectedConversation={selectedConversation} />
-    </>
+    <ChatWindow
+      selectedConversation={status === "ready" ? conversationState.conversation : null}
+      conversationStatus={status}
+      conversationError={conversationState.error}
+      onRetryConversation={() => setRetryCount((count) => count + 1)}
+    />
   );
 };
 

@@ -11,6 +11,15 @@ export const createConversation = async (req, res) => {
       });
     }
 
+    if (
+      typeof userId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        userId,
+      )
+    ) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
     if (currentUserId === userId) {
       return res.status(400).json({
         error: "You cannot start a conversation with yourself",

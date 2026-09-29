@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
+import bcrypt from "bcryptjs";
 import request from "supertest";
 
 import app from "../src/app.js";
@@ -56,6 +57,26 @@ describe("Authentication", () => {
     );
   });
 
+  it("rejects short and bcrypt-truncated passwords at registration", async () => {
+    const shortPasswordResponse = await request(app)
+      .post("/auth/register")
+      .send({
+        username: "TestUser",
+        email: "test@example.com",
+        password: "short",
+      });
+    const longPasswordResponse = await request(app)
+      .post("/auth/register")
+      .send({
+        username: "TestUser",
+        email: "test@example.com",
+        password: "a".repeat(73),
+      });
+
+    expect(shortPasswordResponse.status).toBe(400);
+    expect(longPasswordResponse.status).toBe(400);
+  });
+
   it("logs in a registered user", async () => {
     await request(app).post("/auth/register").send({
       username: "TestUser",
@@ -69,7 +90,33 @@ describe("Authentication", () => {
     });
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("token");
+    expect(response.body.message).toBe("Login successful");
+    expect(response.headers["set-cookie"]).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^token=/)]),
+    );
+    expect(response.headers["set-cookie"][0]).toContain("HttpOnly");
+    expect(response.headers["set-cookie"][0]).toContain("SameSite=Lax");
+    expect(response.headers["set-cookie"][0]).toContain("Path=/");
+  });
+
+  it("authenticates existing mixed-case email records case-insensitively", async () => {
+    await prisma.user.create({
+      data: {
+        username: "LegacyUser",
+        email: "Legacy@Example.com",
+        passwordHash: await bcrypt.hash("password123", 10),
+      },
+    });
+
+    const response = await request(app).post("/auth/login").send({
+      email: "legacy@example.com",
+      password: "password123",
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers["set-cookie"]).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^token=/)]),
+    );
   });
 
   it("rejects an incorrect password", async () => {
@@ -119,11 +166,9 @@ describe("Authentication", () => {
       password: "password123",
     });
 
-    const token = loginResponse.body.token;
-
     const response = await request(app)
       .get("/auth/me")
-      .set("Authorization", `Bearer ${token}`);
+      .set("Cookie", loginResponse.headers["set-cookie"]);
 
     expect(response.status).toBe(200);
     expect(response.body.username).toBe("TestUser");
@@ -140,9 +185,48 @@ describe("Authentication", () => {
   it("rejects /me with an invalid token", async () => {
     const response = await request(app)
       .get("/auth/me")
-      .set("Authorization", "Bearer this-is-not-a-real-token");
+      .set("Cookie", "token=this-is-not-a-real-token");
 
     expect(response.status).toBe(401);
     expect(response.body.error).toBe("Invalid or expired token");
+  });
+
+  it("clears the authentication cookie on logout", async () => {
+    const response = await request(app).post("/auth/logout");
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Logged out successfully");
+    expect(response.headers["set-cookie"]).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^token=;/)]),
+    );
+  });
+
+  it("limits repeated failed login attempts", async () => {
+    const statuses = [];
+
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      const response = await request(app).post("/auth/login").send({
+        email: "missing@example.com",
+        password: "wrong-password",
+      });
+      statuses.push(response.status);
+      if (response.status === 429) break;
+    }
+
+    expect(statuses).toContain(429);
+    expect(statuses.at(-1)).toBe(429);
+  });
+
+  it("rejects disallowed origins and returns standard security headers", async () => {
+    const blockedOriginResponse = await request(app)
+      .get("/auth/me")
+      .set("Origin", "https://attacker.example");
+    const headersResponse = await request(app).get("/auth/me");
+
+    expect(blockedOriginResponse.status).toBe(403);
+    expect(blockedOriginResponse.body.error).toBe("Origin not allowed");
+    expect(blockedOriginResponse.text).not.toContain("at ");
+    expect(headersResponse.headers["x-content-type-options"]).toBe("nosniff");
+    expect(headersResponse.headers["x-frame-options"]).toBe("SAMEORIGIN");
   });
 });

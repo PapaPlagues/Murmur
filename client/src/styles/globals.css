@@ -158,3 +158,30 @@
     @apply font-sans;
   }
 }
+
+.murmur-scrollbar {
+  scrollbar-color: color-mix(in srgb, var(--muted-foreground) 45%, transparent)
+    transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.murmur-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.murmur-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.murmur-scrollbar::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  background-clip: content-box;
+  background-color: color-mix(in srgb, var(--muted-foreground) 45%, transparent);
+}
+
+.murmur-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--muted-foreground) 70%, transparent);
+}

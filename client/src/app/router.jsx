@@ -7,6 +7,7 @@ import Profile from "./routes/Profile.jsx";
 import { EditProfile } from "./routes/EditProfile.jsx";
 import Login from "./routes/Login.jsx";
 import Register from "./routes/Register.jsx";
+import NotFound from "./routes/NotFound.jsx";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
     ],
   },
+  { path: "*", element: <NotFound /> },
 ]);
 
 export default router;

@@ -13,8 +13,8 @@ export const MessageList = ({ messages }) => {
     }, [messages]);
 
     return (
-    <div className="min-h-0 flex-1 overflow-y-auto p-6">
-        <div className="mx-auto flex w-full flex-col gap-2">
+    <div className="murmur-scrollbar min-h-0 flex-1 overflow-y-auto p-3 sm:p-6">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-2">
          {messages?.map((message, index) => {
           const previousMessage = messages[index - 1];
           const nextMessage = messages[index + 1];

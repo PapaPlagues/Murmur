@@ -2,9 +2,12 @@ const handleResponse = async (res) => {
   const data = await res.json();
 
   if (!res.ok) {
-    const errorMsg = data?.error || `HTTP ${res.status}: Something went wrong.`;
+    const errorMsg =
+      data?.error || data?.message || `HTTP ${res.status}: Something went wrong.`;
 
-    throw new Error(errorMsg);
+    const error = new Error(errorMsg);
+    error.status = res.status;
+    throw error;
   }
 
   return data;

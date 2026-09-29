@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/features/Sidebar/Sidebar";
 import ConversationList from "@/components/ConversationList/ConversationList";
 import useConvStore from "@/stores/convStore";
@@ -13,6 +13,7 @@ const Layout = () => {
     location.pathname === "/profile" || location.pathname === "/profile/edit";
 
   const showConversationList = !isOwnProfile;
+  const showMobileConversationList = location.pathname === "/";
 
   const createConversation = useConvStore((state) => state.createConversation);
 
@@ -23,29 +24,46 @@ const Layout = () => {
     navigate(`/conversations/${conversation.id}`);
   };
 
- useEffect(() => {
-  const heartbeat = () => {
-    sendHeartbeat().catch((err) => {
-      console.error("Heartbeat failed:", err);
-    });
-  };
+  useEffect(() => {
+    const heartbeat = () => {
+      sendHeartbeat().catch(() => {});
+    };
 
-  heartbeat();
+    heartbeat();
 
-  const interval = setInterval(heartbeat, 30_000);
+    const interval = setInterval(heartbeat, 30_000);
 
-  return () => clearInterval(interval);
-}, []);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <SidebarProvider>
       <AppSidebar />
 
-      {showConversationList && <ConversationList />}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col md:contents">
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-3 md:hidden">
+          <SidebarTrigger aria-label="Open navigation menu" />
+          <span className="text-base font-semibold">Murmur</span>
+        </header>
 
-      <main className="flex min-h-0 flex-1 bg-background text-foreground">
-        <Outlet context={{ handleStartConversation }} />
-      </main>
+        {showConversationList && (
+          <div
+            className={
+              showMobileConversationList
+                ? "flex min-h-0 min-w-0 flex-1 md:flex-none"
+                : "hidden md:flex md:h-svh md:min-h-0 md:flex-col"
+            }
+          >
+            <ConversationList />
+          </div>
+        )}
+
+        <main
+          className={`${showMobileConversationList ? "hidden md:flex" : "flex"} min-h-0 min-w-0 flex-1 bg-background text-foreground`}
+        >
+          <Outlet context={{ handleStartConversation }} />
+        </main>
+      </div>
     </SidebarProvider>
   );
 };
