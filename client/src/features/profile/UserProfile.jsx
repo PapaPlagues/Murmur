@@ -29,6 +29,14 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
     }
 
   const online = isUserOnline(user?.lastSeenAt);
+  const createdAt = user?.createdAt == null ? null : new Date(user.createdAt);
+  const joinedDate =
+    createdAt && Number.isFinite(createdAt.getTime())
+      ? createdAt.toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric",
+        })
+      : null;
 
   return (
     <main className="murmur-scrollbar flex flex-1 justify-center overflow-y-auto bg-background px-4 py-6 sm:px-6 sm:py-8">
@@ -37,9 +45,16 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
           {/* Banner */}
           <div className="aspect-3.5/1 max-h-64 min-h-36 w-full overflow-hidden rounded-t-xl bg-muted sm:min-h-48">
           <img
-            src={user?.banner || "https://placehold.co/1200x300"}
+            src={user?.banner || "/assets/banner-fallback.svg"}
             alt=""
             className="h-full w-full object-cover"
+            onError={(event) => {
+              if (event.currentTarget.src.endsWith("/assets/banner-fallback.svg")) {
+                event.currentTarget.removeAttribute("src");
+              } else {
+                event.currentTarget.src = "/assets/banner-fallback.svg";
+              }
+            }}
           />
           </div>
 
@@ -47,11 +62,11 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
           <div className="absolute -bottom-12 left-4 sm:-bottom-16 sm:left-8">
             <Avatar className="size-24 border-4 border-background shadow-sm sm:size-32">
               <AvatarImage
-                src={user?.avatar || "https://github.com/shadcn.png"}
+                src={user?.avatar || undefined}
                 alt={user?.username}
               />
               <AvatarFallback>
-                {user?.username?.[0].toUpperCase()}
+                {user?.username?.[0]?.toUpperCase()}
               </AvatarFallback>
 
               <AvatarBadge
@@ -109,15 +124,13 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
           )}
 
           {/* Details */}
-          <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border/70 pb-6 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground/80">
-              Joined{" "}
-              {new Date(user.createdAt).toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
-          </div>
+          {joinedDate && (
+            <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border/70 pb-6 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground/80">
+                Joined {joinedDate}
+              </span>
+            </div>
+          )}
 
           {/* About */}
           <section className="py-6 sm:py-8">

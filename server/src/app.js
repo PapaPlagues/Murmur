@@ -8,16 +8,18 @@ import conversationRouter from "./routes/conversationRoutes.js";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import multer from "multer";
+import { getAllowedOrigins } from "./utils/allowedOrigins.js";
 
 const app = express();
 
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false }));
 
-const allowedOrigins = [
-  process.env.DEV_FRONTEND_URL,
-  process.env.PROD_FRONTEND_URL,
-];
+const allowedOrigins = getAllowedOrigins({
+  isProduction: process.env.NODE_ENV === "production",
+  devOrigin: process.env.DEV_FRONTEND_URL,
+  productionOrigin: process.env.PROD_FRONTEND_URL,
+});
 
 app.use(
   cors({

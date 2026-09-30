@@ -85,6 +85,8 @@ describe("Users", () => {
 		expect(response.body.username).toBe("UpdatedTester");
 		expect(response.body.displayName).toBe("Updated Name");
 		expect(response.body.bio).toBe("A short profile bio");
+		expect(response.body.createdAt).toBe(tester.user.createdAt.toISOString());
+		expect(response.body.lastSeenAt).toBeNull();
 
 		const storedUser = await prisma.user.findUnique({
 			where: { id: tester.user.id },
@@ -157,6 +159,36 @@ describe("Users", () => {
 		expect(avatarResponse.body.error).toBe("Avatar image is required");
 		expect(bannerResponse.status).toBe(400);
 		expect(bannerResponse.body.error).toBe("Banner image is required");
+	});
+
+	it("limits repeated heartbeat writes for one user", async () => {
+		const tester = await createUser("Tester", "tester@example.com");
+		const statuses = [];
+
+		for (let attempt = 0; attempt < 8; attempt += 1) {
+			const response = await request(app)
+				.post("/users/heartbeat")
+				.set("Cookie", `token=${tester.token}`);
+			statuses.push(response.status);
+		}
+
+		expect(statuses.filter((status) => status === 200)).toHaveLength(6);
+		expect(statuses.slice(6)).toEqual([429, 429]);
+	});
+
+	it("limits profile image upload attempts for one user", async () => {
+		const tester = await createUser("Tester", "tester@example.com");
+		const statuses = [];
+
+		for (let attempt = 0; attempt < 12; attempt += 1) {
+			const response = await request(app)
+				.patch("/users/me/avatar")
+				.set("Cookie", `token=${tester.token}`);
+			statuses.push(response.status);
+		}
+
+		expect(statuses.filter((status) => status === 400)).toHaveLength(10);
+		expect(statuses.slice(10)).toEqual([429, 429]);
 	});
 
 	it("rejects SVG and oversized avatar uploads before storage", async () => {

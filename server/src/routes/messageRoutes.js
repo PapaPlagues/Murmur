@@ -7,6 +7,7 @@ import {
 import { authenticate } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
 import { messageWriteLimiter } from "../middleware/writeRateLimit.js";
+import { requireConversationMember } from "../middleware/requireConversationMember.js";
 
 const messageRouter = express.Router();
 
@@ -20,6 +21,7 @@ messageRouter.post(
   "/:conversationId/messages",
   authenticate,
   messageWriteLimiter,
+  requireConversationMember,
   upload.single("image"),
   createMessage,
 );

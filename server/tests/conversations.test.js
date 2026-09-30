@@ -73,6 +73,18 @@ describe("Conversations", () => {
     expect(response.body.error).toBe("User ID is required");
   });
 
+  it("rejects a null request body without an internal error", async () => {
+    const tester = await createUser("Tester", "tester@example.com");
+
+    const response = await request(app)
+      .post("/conversations")
+      .set("Cookie", `token=${tester.token}`)
+      .send(null);
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe("User ID is required");
+  });
+
   it("rejects a malformed conversation target ID", async () => {
     const tester = await createUser("Tester", "tester@example.com");
 

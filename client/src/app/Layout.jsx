@@ -3,6 +3,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/features/Sidebar/Sidebar";
 import ConversationList from "@/components/ConversationList/ConversationList";
 import useConvStore from "@/stores/convStore";
+import useAuthStore from "@/stores/authStore";
 import { useEffect } from "react";
 import { sendHeartbeat } from "@/api/users";
 
@@ -16,6 +17,7 @@ const Layout = () => {
   const showMobileConversationList = location.pathname === "/";
 
   const createConversation = useConvStore((state) => state.createConversation);
+  const setLastSeenAt = useAuthStore((state) => state.setLastSeenAt);
 
   const navigate = useNavigate();
 
@@ -25,16 +27,28 @@ const Layout = () => {
   };
 
   useEffect(() => {
-    const heartbeat = () => {
-      sendHeartbeat().catch(() => {});
+    let active = true;
+
+    const heartbeat = async () => {
+      try {
+        const { lastSeenAt } = await sendHeartbeat();
+        if (active && lastSeenAt) {
+          setLastSeenAt(lastSeenAt);
+        }
+      } catch {
+        // Presence is best-effort; the next heartbeat will retry.
+      }
     };
 
     heartbeat();
 
     const interval = setInterval(heartbeat, 30_000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [setLastSeenAt]);
 
   return (
     <SidebarProvider>

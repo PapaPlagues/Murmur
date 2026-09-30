@@ -19,3 +19,13 @@ export const messageWriteLimiter = createUserLimiter(
   60,
   "Too many messages. Try again shortly.",
 );
+
+export const profileImageUploadLimiter = createUserLimiter(
+  10,
+  "Too many profile image uploads. Try again later.",
+);
+
+export const heartbeatLimiter = createUserLimiter(
+  6,
+  "Too many presence updates. Try again shortly.",
+);

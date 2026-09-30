@@ -9,6 +9,10 @@ import {
 } from "../controllers/userController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 import upload from "../middleware/upload.js";
+import {
+  heartbeatLimiter,
+  profileImageUploadLimiter,
+} from "../middleware/writeRateLimit.js";
 
 const userRouter = express.Router();
 
@@ -22,6 +26,7 @@ userRouter.patch("/me", authenticate, updateProfile);
 userRouter.patch(
   "/me/avatar",
   authenticate,
+  profileImageUploadLimiter,
   upload.single("avatar"),
   updateAvatar,
 );
@@ -30,6 +35,7 @@ userRouter.patch(
 userRouter.patch(
   "/me/banner",
   authenticate,
+  profileImageUploadLimiter,
   upload.single("banner"),
   updateBanner,
 );
@@ -38,6 +44,6 @@ userRouter.patch(
 userRouter.get("/:userId", authenticate, getUser);
 
 // check if user is online
-userRouter.post("/heartbeat", authenticate, heartbeat);
+userRouter.post("/heartbeat", authenticate, heartbeatLimiter, heartbeat);
 
 export default userRouter;

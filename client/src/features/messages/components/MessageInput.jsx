@@ -22,6 +22,13 @@ const MessageInput = ({ onSend }) => {
     setSendError("");
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  }
+
   const handleImageChange = (e) => {
     const nextFile = e.target.files[0] || null;
     if (imagePreviewRef.current) {
@@ -100,6 +107,7 @@ const MessageInput = ({ onSend }) => {
             aria-label="Message"
             value={content}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             disabled={isSending}
           />
         </InputGroup>

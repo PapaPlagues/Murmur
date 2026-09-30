@@ -126,6 +126,8 @@ export const updateProfile = async (req, res) => {
         avatar: true,
         banner: true,
         bio: true,
+        createdAt: true,
+        lastSeenAt: true,
       },
     });
 
@@ -184,6 +186,8 @@ export const updateAvatar = async (req, res) => {
         avatar: true,
         banner: true,
         bio: true,
+        createdAt: true,
+        lastSeenAt: true,
       },
     });
 
@@ -243,6 +247,8 @@ export const updateBanner = async (req, res) => {
         avatar: true,
         banner: true,
         bio: true,
+        createdAt: true,
+        lastSeenAt: true,
       },
     });
 

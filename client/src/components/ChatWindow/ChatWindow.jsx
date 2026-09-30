@@ -1,6 +1,7 @@
 import MessageInput from "@/features/messages/components/MessageInput";
 import UserProfile from "@/features/profile/UserProfile";
 import useAuthStore from "@/stores/authStore";
+import useConvStore from "@/stores/convStore";
 import useMessageStore from "@/stores/messageStore";
 import { useEffect } from "react";
 import { MessageList } from "@/features/messages/components/MessageList";
@@ -27,6 +28,7 @@ const ChatWindow = ({
   const messageLoadError = useMessageStore((state) => state.loadError);
   const sendMessage = useMessageStore((state) => state.sendMessage);
   const getMessages = useMessageStore((state) => state.getMessages);
+  const updateLatestMessage = useConvStore((state) => state.updateLatestMessage);
 
   useEffect(() => {
     if (!selectedConversation?.id) return;
@@ -35,7 +37,8 @@ const ChatWindow = ({
   }, [selectedConversation?.id, getMessages]);
 
   const handleSendMessage = async (content, fileImage) => {
-    await sendMessage(selectedConversation.id, { content, fileImage });
+    const message = await sendMessage(selectedConversation.id, { content, fileImage });
+    updateLatestMessage(selectedConversation.id, message);
   };
 
   return (
@@ -49,6 +52,11 @@ const ChatWindow = ({
         <h2 className="truncate font-semibold">
           {otherMember?.user.displayName || otherMember?.user.username}
         </h2>
+        {otherMember?.user.username && (
+          <p className="truncate text-sm text-muted-foreground">
+            @{otherMember.user.username}
+          </p>
+        )}
       </div>
 
       {/* Messages */}

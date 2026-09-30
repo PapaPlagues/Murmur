@@ -38,6 +38,15 @@ const useConvStore = create((set) => ({
     return await getConversationApi(conversationId);
   },
 
+  updateLatestMessage: (conversationId, message) =>
+    set((state) => ({
+      conversations: state.conversations.map((conversation) =>
+        conversation.id === conversationId
+          ? { ...conversation, messages: [message] }
+          : conversation,
+      ),
+    })),
+
   createConversation: async (userId) => {
     const conversation = await createConversationApi({ userId });
 

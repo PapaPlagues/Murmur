@@ -27,6 +27,7 @@ describe("Authentication", () => {
     expect(response.status).toBe(201);
     expect(response.body.user.username).toBe("TestUser");
     expect(response.body.user.email).toBe("test@example.com");
+    expect(response.body.user).not.toHaveProperty("passwordHash");
   });
 
   it("rejects duplicate username or email", async () => {
@@ -215,6 +216,21 @@ describe("Authentication", () => {
 
     expect(statuses).toContain(429);
     expect(statuses.at(-1)).toBe(429);
+  });
+
+  it("limits repeated successful registrations from one IP", async () => {
+    const statuses = [];
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const response = await request(app).post("/auth/register").send({
+        username: `LimitedUser${attempt}`,
+        email: `limited${attempt}@example.com`,
+        password: "password123",
+      });
+      statuses.push(response.status);
+    }
+
+    expect(statuses).toEqual([201, 429, 429]);
   });
 
   it("rejects disallowed origins and returns standard security headers", async () => {

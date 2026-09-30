@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,11 +19,37 @@ export const EditProfile = () => {
 
   const updateAvatar = useUserStore((state) => state.updateAvatar);
   const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState(null);
 
   const updateBanner = useUserStore((state) => state.updateBanner);
   const [bannerFile, setBannerFile] = useState(null);
+  const [bannerPreviewUrl, setBannerPreviewUrl] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+    };
+  }, [avatarPreviewUrl]);
+
+  useEffect(() => {
+    return () => {
+      if (bannerPreviewUrl) URL.revokeObjectURL(bannerPreviewUrl);
+    };
+  }, [bannerPreviewUrl]);
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0] || null;
+    setAvatarFile(file);
+    setAvatarPreviewUrl(file ? URL.createObjectURL(file) : null);
+  };
+
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0] || null;
+    setBannerFile(file);
+    setBannerPreviewUrl(file ? URL.createObjectURL(file) : null);
+  };
 
 
   const [formData, setFormData] = useState({
@@ -92,9 +118,16 @@ export const EditProfile = () => {
 
               <div className="aspect-7/2 max-h-56 min-h-28 w-full overflow-hidden rounded-lg border border-border/70 bg-muted sm:min-h-36">
                 <img
-                  src={bannerFile ? URL.createObjectURL(bannerFile) : user?.banner || "https://placehold.co/1200x300"}
+                  src={bannerPreviewUrl || user?.banner || "/assets/banner-fallback.svg"}
                   alt="Banner preview"
                   className="h-full w-full object-cover"
+                  onError={(event) => {
+                    if (event.currentTarget.src.endsWith("/assets/banner-fallback.svg")) {
+                      event.currentTarget.removeAttribute("src");
+                    } else {
+                      event.currentTarget.src = "/assets/banner-fallback.svg";
+                    }
+                  }}
                 />
               </div>
 
@@ -102,11 +135,11 @@ export const EditProfile = () => {
                 <div className="flex items-center gap-4">
                   <Avatar className="size-20 shrink-0 ring-4 ring-background sm:size-24">
                     <AvatarImage
-                      src={avatarFile ? URL.createObjectURL(avatarFile) : user?.avatar}
+                      src={avatarPreviewUrl || user?.avatar || undefined}
                       alt={`${user?.username}'s profile preview`}
                     />
                     <AvatarFallback className="text-xl font-semibold">
-                      {user?.username?.[0].toUpperCase()}
+                      {user?.username?.[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
@@ -120,7 +153,7 @@ export const EditProfile = () => {
                   id="banner"
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setBannerFile(e.target.files[0] || null)}
+                  onChange={handleBannerChange}
                   className="h-auto min-h-10 cursor-pointer py-2 file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-xs file:font-medium"
                   />
                 </div>
@@ -130,7 +163,7 @@ export const EditProfile = () => {
                     id="avatar"
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setAvatarFile(e.target.files[0] || null)}
+                    onChange={handleAvatarChange}
                     className="h-auto min-h-10 cursor-pointer py-2 file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-xs file:font-medium"
                   />
                 </div>

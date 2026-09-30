@@ -41,6 +41,9 @@ export const register = async (req, res) => {
           { email: { equals: email, mode: "insensitive" } },
         ],
       },
+      select: {
+        id: true,
+      },
     });
 
     if (existingUser) {
@@ -57,6 +60,12 @@ export const register = async (req, res) => {
         displayName,
         email,
         passwordHash,
+      },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        email: true,
       },
     });
 
@@ -94,6 +103,10 @@ export const login = async (req, res) => {
     // Find user
     const user = await prisma.user.findFirst({
       where: { email: { equals: email, mode: "insensitive" } },
+      select: {
+        id: true,
+        passwordHash: true,
+      },
     });
 
     if (!user) {
@@ -121,7 +134,7 @@ export const login = async (req, res) => {
     });
 
     return res.status(200).json({ message: "Login successful" });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Login failed" });
   }
 };
@@ -138,7 +151,7 @@ export const logout = async (req, res) => {
     res.status(200).json({
       message: "Logged out successfully",
     });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "cannot fetch" });
   }
 };

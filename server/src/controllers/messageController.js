@@ -44,9 +44,6 @@ export const getMessages = async (req, res) => {
           },
         },
       },
-      orderBy: {
-        createdAt: "asc",
-      },
     });
 
     return res.status(200).json(messages);
@@ -116,7 +113,8 @@ export const getRecentMessage = async (req, res) => {
 export const createMessage = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    const { content } = req.body;
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const { content } = body;
     const userId = req.user.userId;
 
     if (
@@ -130,22 +128,6 @@ export const createMessage = async (req, res) => {
     if (!content?.trim() && !req.file) {
       return res.status(400).json({
         error: "Message must contain text or an image",
-      });
-    }
-
-    // Make sure the user belongs to this conversation
-    const membership = await prisma.conversationMember.findUnique({
-      where: {
-        conversationId_userId: {
-          conversationId: conversationId,
-          userId,
-        },
-      },
-    });
-
-    if (!membership) {
-      return res.status(403).json({
-        error: "You are not a member of this conversation",
       });
     }
 

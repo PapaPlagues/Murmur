@@ -64,7 +64,7 @@ const Register = () => {
         setMessageIsError(true);
       }
     } catch {
-      setMessage("An error occured. Please try again.");
+      setMessage("An error occurred. Please try again.");
       setMessageIsError(true);
     } finally {
       setLoading(false);

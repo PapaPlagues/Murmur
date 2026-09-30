@@ -43,7 +43,7 @@ const Login = () => {
       setMessage("Login successful!");
       navigate("/");
     } catch {
-      setMessage("An error occured. Please try again.");
+      setMessage("An error occurred. Please try again.");
       setMessageIsError(true);
     } finally {
       setLoading(false);

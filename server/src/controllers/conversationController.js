@@ -3,7 +3,8 @@ import { prisma } from "../../lib/prisma.js";
 export const createConversation = async (req, res) => {
   try {
     const currentUserId = req.user.userId;
-    const { userId } = req.body;
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const { userId } = body;
 
     if (!userId) {
       return res.status(400).json({
@@ -30,6 +31,9 @@ export const createConversation = async (req, res) => {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
+      },
+      select: {
+        id: true,
       },
     });
 

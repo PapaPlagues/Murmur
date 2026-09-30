@@ -87,6 +87,20 @@ describe("Messages", () => {
 		expect(response.body.error).toBe("Message must contain text or an image");
 	});
 
+	it("rejects a null request body without an internal error", async () => {
+		const tester = await createUser("Tester", "tester@example.com");
+		const alice = await createUser("Alice", "alice@example.com");
+		const conversation = await createConversation(tester.user.id, alice.user.id);
+
+		const response = await request(app)
+			.post(`/conversations/${conversation.id}/messages`)
+			.set("Cookie", `token=${tester.token}`)
+			.send(null);
+
+		expect(response.status).toBe(400);
+		expect(response.body.error).toBe("Message must contain text or an image");
+	});
+
 	it("rejects non-string and oversized message content", async () => {
 		const tester = await createUser("Tester", "tester@example.com");
 		const alice = await createUser("Alice", "alice@example.com");
@@ -133,9 +147,14 @@ describe("Messages", () => {
 			.post(`/conversations/${conversation.id}/messages`)
 			.set("Cookie", `token=${outsider.token}`)
 			.field("content", "Intruding");
+		const uploadResponse = await request(app)
+			.post(`/conversations/${conversation.id}/messages`)
+			.set("Cookie", `token=${outsider.token}`)
+			.attach("image", Buffer.from("not-an-image"), "attempt.png");
 
 		expect(readResponse.status).toBe(403);
 		expect(sendResponse.status).toBe(403);
+		expect(uploadResponse.status).toBe(403);
 	});
 
 	it("rejects unauthenticated message requests", async () => {

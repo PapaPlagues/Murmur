@@ -1,7 +1,7 @@
 import ConversationSearch from "@/features/conversations/components/ConversationSearch";
 import ConversationItem from "@/features/conversations/components/ConversationItem";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useMatch, useNavigate } from "react-router";
 import useUserStore from "@/stores/userStore";
 import useConvStore from "@/stores/convStore";
 import useAuthStore from "@/stores/authStore";
@@ -12,6 +12,7 @@ import { MessageSquareText, Plus, SearchX, UsersRound, X } from "lucide-react";
 const ConversationList = () => {
   const [showUsers, setShowUsers] = useState(false);
   const navigate = useNavigate();
+  const conversationMatch = useMatch("/conversations/:conversationId");
 
   const getUsers = useUserStore((state) => state.getUsers);
   const users = useUserStore((state) => state.users);
@@ -126,6 +127,7 @@ const ConversationList = () => {
                 <ConversationItem
                   key={user.id}
                   username={user.username}
+                  displayName={user.displayName}
                   avatar={user.avatar}
                   lastSeenAt={user.lastSeenAt}
                   onClick={() => handleProfileClick(user)}
@@ -173,12 +175,14 @@ const ConversationList = () => {
                 <ConversationItem
                   key={conversation.id}
                   username={otherMember.user.username}
+                  displayName={otherMember.user.displayName}
                   lastMessage={
                       conversation.messages?.[0]?.content ||
                       (conversation.messages?.[0]?.imageUrl ? "📷 Image" : null)
                     }
                   avatar={otherMember.user.avatar}
                   lastSeenAt={otherMember.user.lastSeenAt}
+                  isActive={conversation.id === conversationMatch?.params.conversationId}
                   onClick={() => handleConversationClick(conversation)}
                 />
               );

@@ -9,9 +9,11 @@ import {
 } from "@/components/ui/message";
 import useAuthStore from "@/stores/authStore";
 import { Link } from "react-router";
+import { useState } from "react";
 
 const MessageBubble = ({ message, showSender, showTime }) => {
   const currentUser = useAuthStore((state) => state.user);
+  const [imageUnavailable, setImageUnavailable] = useState(false);
 
   const isCurrentUser = message.sender.id === currentUser.id;
 
@@ -27,7 +29,7 @@ const MessageBubble = ({ message, showSender, showTime }) => {
                 alt={message.sender.username}
               />
               <AvatarFallback>
-                {message.sender.username?.[0].toUpperCase()}
+                {message.sender.username?.[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </Link>
@@ -47,12 +49,16 @@ const MessageBubble = ({ message, showSender, showTime }) => {
             <BubbleContent>{message.content}</BubbleContent>
           )}
 
-          {message.imageUrl && (
+          {message.imageUrl && !imageUnavailable && (
             <img
               src={message.imageUrl}
               alt="Message attachment"
               className="h-auto max-w-full rounded-lg object-cover sm:max-w-sm"
+              onError={() => setImageUnavailable(true)}
             />
+          )}
+          {imageUnavailable && (
+            <p className="text-sm text-muted-foreground">Image unavailable</p>
           )}
         </Bubble>
 

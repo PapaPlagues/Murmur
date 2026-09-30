@@ -22,7 +22,6 @@ const registrationLimiter = rateLimit({
   limit: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  skipSuccessfulRequests: true,
   message: { error: "Too many registration attempts. Try again later." },
 });
 

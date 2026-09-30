@@ -11,6 +11,10 @@ const useAuthStore = create((set) => ({
   isLoading: true,
 
   setUser: (user) => set({ user }),
+  setLastSeenAt: (lastSeenAt) =>
+    set((state) =>
+      state.user ? { user: { ...state.user, lastSeenAt } } : {},
+    ),
 
   login: async (formData) => {
     await loginApi(formData);
