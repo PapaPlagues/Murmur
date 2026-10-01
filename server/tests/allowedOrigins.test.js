@@ -31,4 +31,31 @@ describe("CORS origin selection", () => {
       }),
     ).toEqual([]);
   });
+
+  it("normalizes configured frontend URLs to their origins", () => {
+    expect(
+      getAllowedOrigins({
+        isProduction: true,
+        productionOrigin: "https://murmur.example/some/path/",
+      }),
+    ).toEqual(["https://murmur.example"]);
+  });
+
+  it("ignores malformed configured origins", () => {
+    expect(
+      getAllowedOrigins({
+        isProduction: true,
+        productionOrigin: "murmur.example",
+      }),
+    ).toEqual([]);
+  });
+
+  it("rejects non-web origins", () => {
+    expect(
+      getAllowedOrigins({
+        isProduction: true,
+        productionOrigin: "file:///some/path",
+      }),
+    ).toEqual([]);
+  });
 });
