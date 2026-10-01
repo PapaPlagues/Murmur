@@ -41,6 +41,19 @@ describe("CORS origin selection", () => {
     ).toEqual(["https://murmur.example"]);
   });
 
+  it("allows multiple explicitly configured production frontend origins", () => {
+    expect(
+      getAllowedOrigins({
+        isProduction: true,
+        productionOrigin:
+          "https://murmur.example, https://murmur-kj71fmgip-papaplagues1.vercel.app/",
+      }),
+    ).toEqual([
+      "https://murmur.example",
+      "https://murmur-kj71fmgip-papaplagues1.vercel.app",
+    ]);
+  });
+
   it("ignores malformed configured origins", () => {
     expect(
       getAllowedOrigins({

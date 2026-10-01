@@ -11,6 +11,6 @@ Murmur is a private, one-to-one messaging app built with React, Vite, Express, a
 
 ## Production setup
 
-Set `VITE_API_URL` in the frontend build environment to the deployed API origin. Configure `PROD_FRONTEND_URL` in the server environment to the deployed frontend URL (for example, `https://murmur.example`); the server normalizes it to its origin for CORS checks. Also configure `DATABASE_URL`, `JWT_SECRET`, and Cloudinary credentials in the server environment. Do not commit `.env` files or put secrets in `VITE_*` variables. `TEST_DATABASE_URL` is only needed for server tests.
+Set `VITE_API_URL` in the frontend build environment to the deployed API origin. Configure `PROD_FRONTEND_URL` in the server environment to the deployed frontend origin (for example, `https://murmur.example`). Multiple exact origins can be comma-separated to include a Vercel preview URL when needed; the server normalizes each URL before its CORS check and does not allow arbitrary Vercel hosts. Also configure `DATABASE_URL`, `JWT_SECRET`, and Cloudinary credentials in the server environment. Do not commit `.env` files or put secrets in `VITE_*` variables. `TEST_DATABASE_URL` is only needed for server tests.
 
 Build the frontend with `npm run build` from `client`. Apply Prisma migrations to the production database with `npm run prisma:migrate:deploy` from `server` before starting the server. This runs `prisma migrate deploy`; do not use the development-only `prisma:migrate` command against production.

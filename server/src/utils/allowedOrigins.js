@@ -11,7 +11,12 @@ const normalizeOrigin = (value) => {
   }
 };
 
+const parseOrigins = (value) =>
+  (typeof value === "string" ? value.split(",") : [])
+    .map((origin) => normalizeOrigin(origin.trim()))
+    .filter(Boolean);
+
 export const getAllowedOrigins = ({ isProduction, devOrigin, productionOrigin }) =>
   (isProduction ? [productionOrigin] : [devOrigin, productionOrigin])
-    .map(normalizeOrigin)
+    .flatMap(parseOrigins)
     .filter(Boolean);
