@@ -20,6 +20,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const loginUser = useAuthStore((state) => state.login);
+  const guestLogin = useAuthStore((state) => state.guestLogin);
 
   // Update state when input changes
   const handleChange = (e) => {
@@ -42,8 +43,27 @@ const Login = () => {
 
       setMessage("Login successful!");
       navigate("/");
-    } catch {
-      setMessage("An error occurred. Please try again.");
+    } catch (error) {
+      setMessage(error.message || "An error occurred. Please try again.");
+      setMessageIsError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    if (loading) return;
+
+    setLoading(true);
+    setMessage("");
+    setMessageIsError(false);
+
+    try {
+      await guestLogin();
+      setMessage("Login successful!");
+      navigate("/");
+    } catch (error) {
+      setMessage(error.message || "An error occurred. Please try again.");
       setMessageIsError(true);
     } finally {
       setLoading(false);
@@ -91,8 +111,18 @@ const Login = () => {
             </Field>
           </FieldGroup>
 
-          <Button className="w-full" type="submit" disabled={loading}>
+          <Button className="w-full hover:cursor-pointer" type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
+          </Button>
+
+          <Button
+            className="w-full border-primary/40 text-primary hover:bg-primary/10 hover:text-primary cursor-pointer"
+            type="button"
+            variant="outline"
+            onClick={handleGuestLogin}
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Continue as Guest"}
           </Button>
 
           <div className="mt-4 text-center">

@@ -83,13 +83,18 @@ export const updateProfile = async (req, res) => {
     const data = {};
 
     if (Object.hasOwn(body, "username")) {
-      if (
-        typeof body.username !== "string" ||
-        !body.username.trim() ||
-        body.username.trim().length > 32
-      ) {
+      if (typeof body.username !== "string") {
         return res.status(400).json({ error: "Invalid username" });
       }
+
+      if (/\s/.test(body.username)) {
+        return res.status(400).json({ error: "Username cannot contain spaces" });
+      }
+
+      if (!body.username.trim() || body.username.trim().length > 32) {
+        return res.status(400).json({ error: "Invalid username" });
+      }
+
       data.username = body.username.trim();
     }
 
@@ -133,6 +138,10 @@ export const updateProfile = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (err) {
+    if (err.code === "P2002") {
+      return res.status(409).json({ error: "Username already exists" });
+    }
+
     console.error(err);
 
     return res.status(500).json({

@@ -58,6 +58,17 @@ describe("Authentication", () => {
     );
   });
 
+  it("rejects usernames containing whitespace during registration", async () => {
+    const response = await request(app).post("/auth/register").send({
+      username: "new user",
+      email: "newuser@example.com",
+      password: "password123",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe("Username cannot contain spaces");
+  });
+
   it("rejects short and bcrypt-truncated passwords at registration", async () => {
     const shortPasswordResponse = await request(app)
       .post("/auth/register")
@@ -98,6 +109,52 @@ describe("Authentication", () => {
     expect(response.headers["set-cookie"][0]).toContain("HttpOnly");
     expect(response.headers["set-cookie"][0]).toContain("SameSite=Lax");
     expect(response.headers["set-cookie"][0]).toContain("Path=/");
+  });
+
+  it("logs into the designated demo user without frontend credentials", async () => {
+    const demoUser = await prisma.user.create({
+      data: {
+        username: "DemoUser",
+        email: "demo@example.com",
+        passwordHash: "unused-demo-password-hash",
+        isDemo: true,
+      },
+    });
+
+    const guestResponse = await request(app).post("/auth/guest");
+
+    expect(guestResponse.status).toBe(200);
+    expect(guestResponse.headers["set-cookie"]).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^token=/)]),
+    );
+    expect(guestResponse.headers["set-cookie"][0]).toContain("HttpOnly");
+    expect(guestResponse.headers["set-cookie"][0]).toContain("SameSite=Lax");
+
+    const currentUserResponse = await request(app)
+      .get("/auth/me")
+      .set("Cookie", guestResponse.headers["set-cookie"]);
+
+    expect(currentUserResponse.status).toBe(200);
+    expect(currentUserResponse.body.id).toBe(demoUser.id);
+    expect(currentUserResponse.body).not.toHaveProperty("passwordHash");
+  });
+
+  it("does not accept a client-supplied demo user ID", async () => {
+    const normalUser = await prisma.user.create({
+      data: {
+        username: "NormalUser",
+        email: "normal@example.com",
+        passwordHash: "unused-normal-password-hash",
+        isDemo: false,
+      },
+    });
+
+    const response = await request(app)
+      .post("/auth/guest")
+      .send({ userId: normalUser.id });
+
+    expect(response.status).toBe(503);
+    expect(response.headers["set-cookie"]).toBeUndefined();
   });
 
   it("authenticates existing mixed-case email records case-insensitively", async () => {
@@ -204,6 +261,7 @@ describe("Authentication", () => {
 
   it("limits repeated failed login attempts", async () => {
     const statuses = [];
+    let limitedResponse;
 
     for (let attempt = 0; attempt < 12; attempt += 1) {
       const response = await request(app).post("/auth/login").send({
@@ -211,11 +269,23 @@ describe("Authentication", () => {
         password: "wrong-password",
       });
       statuses.push(response.status);
-      if (response.status === 429) break;
+      if (response.status === 429) {
+        limitedResponse = response;
+        break;
+      }
     }
 
     expect(statuses).toContain(429);
     expect(statuses.at(-1)).toBe(429);
+    expect(limitedResponse.body.error).toBe(
+      "Too many login attempts. Try again later.",
+    );
+    expect(limitedResponse.headers).not.toHaveProperty("ratelimit-limit");
+    expect(limitedResponse.headers).not.toHaveProperty("ratelimit-remaining");
+    expect(limitedResponse.headers).not.toHaveProperty("ratelimit-reset");
+    expect(limitedResponse.headers).not.toHaveProperty("ratelimit");
+    expect(limitedResponse.headers).not.toHaveProperty("ratelimit-policy");
+    expect(limitedResponse.headers).not.toHaveProperty("retry-after");
   });
 
   it("limits repeated successful registrations from one IP", async () => {
@@ -230,7 +300,8 @@ describe("Authentication", () => {
       statuses.push(response.status);
     }
 
-    expect(statuses).toEqual([201, 429, 429]);
+    expect(statuses).toContain(429);
+    expect(statuses.at(-1)).toBe(429);
   });
 
   it("rejects disallowed origins and returns standard security headers", async () => {

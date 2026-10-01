@@ -5,7 +5,7 @@ const createUserLimiter = (limit, message) =>
     windowMs: 60 * 1000,
     limit,
     keyGenerator: (req) => req.user.userId,
-    standardHeaders: true,
+    standardHeaders: false,
     legacyHeaders: false,
     message: { error: message },
   });

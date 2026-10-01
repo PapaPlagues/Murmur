@@ -3,9 +3,11 @@ const handleResponse = async (res) => {
 
   if (!res.ok) {
     const errorMsg =
-      data?.message || `HTTP ${res.status}: Something went wrong.`;
+      data?.error || data?.message || `HTTP ${res.status}: Something went wrong.`;
 
-    throw new Error(errorMsg);
+    const error = new Error(errorMsg);
+    error.status = res.status;
+    throw error;
   }
 
   return data;
@@ -20,6 +22,15 @@ export const login = async (formData) => {
     },
     credentials: "include",
     body: JSON.stringify(formData),
+  });
+
+  return handleResponse(response);
+};
+
+export const guestLogin = async () => {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/guest`, {
+    method: "POST",
+    credentials: "include",
   });
 
   return handleResponse(response);

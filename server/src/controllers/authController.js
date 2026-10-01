@@ -2,6 +2,20 @@ import { prisma } from "../../lib/prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+const setSessionCookie = (res, userId) => {
+  const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 1000,
+  });
+};
+
 export const register = async (req, res) => {
   try {
     const body = req.body && typeof req.body === "object" ? req.body : {};
@@ -21,6 +35,7 @@ export const register = async (req, res) => {
 
     if (
       username.trim().length > 32 ||
+      /\s/.test(username) ||
       email.length > 254 ||
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
       (displayName != null &&
@@ -28,7 +43,11 @@ export const register = async (req, res) => {
       password.length < 8 ||
       Buffer.byteLength(password, "utf8") > 72
     ) {
-      return res.status(400).json({ error: "Invalid registration details" });
+      return res.status(400).json({
+        error: /\s/.test(username)
+          ? "Username cannot contain spaces"
+          : "Invalid registration details",
+      });
     }
 
     const normalizedUsername = username.trim();
@@ -120,22 +139,31 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // create token
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 1000,
-    });
+    setSessionCookie(res, user.id);
 
     return res.status(200).json({ message: "Login successful" });
   } catch {
     res.status(500).json({ error: "Login failed" });
+  }
+};
+
+export const guestLogin = async (req, res) => {
+  try {
+    const demoUser = await prisma.user.findFirst({
+      where: { isDemo: true },
+      select: { id: true },
+    });
+
+    if (!demoUser) {
+      return res.status(503).json({ error: "Guest login is unavailable" });
+    }
+
+    setSessionCookie(res, demoUser.id);
+
+    return res.status(200).json({ message: "Guest login successful" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Guest login failed" });
   }
 };
 
@@ -152,7 +180,7 @@ export const logout = async (req, res) => {
       message: "Logged out successfully",
     });
   } catch {
-    res.status(500).json({ error: "cannot fetch" });
+    res.status(500).json({ error: "Logout failed" });
   }
 };
 

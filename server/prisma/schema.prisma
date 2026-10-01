@@ -12,6 +12,7 @@ model User {
   username     String   @unique
   email        String   @unique
   passwordHash String
+  isDemo       Boolean  @default(false)
   displayName  String?
   avatar       String?
   banner       String?

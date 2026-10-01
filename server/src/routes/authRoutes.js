@@ -2,6 +2,7 @@ import express from "express";
 import {
   register,
   login,
+  guestLogin,
   logout,
   getCurrentUser,
 } from "../controllers/authController.js";
@@ -12,15 +13,22 @@ const authRouter = express.Router();
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 10,
-  standardHeaders: true,
+  standardHeaders: false,
   legacyHeaders: false,
   skipSuccessfulRequests: true,
   message: { error: "Too many login attempts. Try again later." },
 });
+const guestLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: false,
+  legacyHeaders: false,
+  message: { error: "Too many guest login attempts. Try again later." },
+});
 const registrationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 10,
-  standardHeaders: true,
+  standardHeaders: false,
   legacyHeaders: false,
   message: { error: "Too many registration attempts. Try again later." },
 });
@@ -28,6 +36,7 @@ const registrationLimiter = rateLimit({
 authRouter.post("/register", registrationLimiter, register);
 
 authRouter.post("/login", loginLimiter, login);
+authRouter.post("/guest", guestLoginLimiter, guestLogin);
 
 authRouter.post("/logout", logout);
 

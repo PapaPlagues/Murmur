@@ -7,10 +7,9 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Ghost } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -38,6 +37,13 @@ const Register = () => {
   // Handle form submission and API call
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match.");
+      setMessageIsError(true);
+      return;
+    }
+
     setLoading(true);
     setMessage("");
     setMessageIsError(false);
@@ -50,7 +56,12 @@ const Register = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            username: formData.username,
+            displayName: formData.displayName,
+            email: formData.email,
+            password: formData.password,
+          }),
         },
       );
 
@@ -60,7 +71,7 @@ const Register = () => {
         setMessage("Registration successful!");
         navigate("/login");
       } else {
-        setMessage(data.message || "Registration failed.");
+        setMessage(data.error || data.message || "Registration failed.");
         setMessageIsError(true);
       }
     } catch {
@@ -141,6 +152,7 @@ const Register = () => {
                 id="password"
                 name="password"
                 type="password"
+                minLength={8}
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="••••••••"

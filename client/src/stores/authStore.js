@@ -1,5 +1,6 @@
 import {
   login as loginApi,
+  guestLogin as guestLoginApi,
   getCurrentUser as getCurrentUserApi,
   logout as logoutApi,
 } from "@/api/auth";
@@ -18,6 +19,12 @@ const useAuthStore = create((set) => ({
 
   login: async (formData) => {
     await loginApi(formData);
+    const user = await getCurrentUserApi();
+    set({ user, isLoading: false });
+  },
+
+  guestLogin: async () => {
+    await guestLoginApi();
     const user = await getCurrentUserApi();
     set({ user, isLoading: false });
   },

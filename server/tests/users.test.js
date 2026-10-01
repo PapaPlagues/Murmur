@@ -135,6 +135,36 @@ describe("Users", () => {
 		expect(response.body.error).toBe("Invalid bio");
 	});
 
+	it("rejects usernames containing spaces when updating a profile", async () => {
+		const tester = await createUser("Tester", "tester@example.com");
+
+		const response = await request(app)
+			.patch("/users/me")
+			.set("Cookie", `token=${tester.token}`)
+			.send({ username: "new user" });
+
+		expect(response.status).toBe(400);
+		expect(response.body.error).toBe("Username cannot contain spaces");
+
+		const storedUser = await prisma.user.findUnique({
+			where: { id: tester.user.id },
+		});
+		expect(storedUser.username).toBe("Tester");
+	});
+
+	it("returns a conflict when updating to an existing username", async () => {
+		const tester = await createUser("Tester", "tester@example.com");
+		await createUser("ExistingUser", "existing@example.com");
+
+		const response = await request(app)
+			.patch("/users/me")
+			.set("Cookie", `token=${tester.token}`)
+			.send({ username: "ExistingUser" });
+
+		expect(response.status).toBe(409);
+		expect(response.body.error).toBe("Username already exists");
+	});
+
 	it("rejects unauthenticated profile operations", async () => {
 		const readResponse = await request(app).get(`/users/${randomUUID()}`);
 		const updateResponse = await request(app)
