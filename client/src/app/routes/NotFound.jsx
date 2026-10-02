@@ -18,7 +18,7 @@ const NotFound = () => {
         </p>
         <Button type="button" className="mt-6" onClick={() => navigate("/")}>
           <MessageSquare aria-hidden="true" />
-          Back to Messages
+          Back to Murmur
         </Button>
       </Card>
     </main>
