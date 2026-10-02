@@ -32,11 +32,11 @@ export const LogOutButton = () => {
         </p>
       )}
       <Button
-      type="button"
-      variant="ghost"
-      disabled={isLoggingOut}
-      onClick={handleLogout}
-      className="h-auto w-full justify-start gap-3 rounded-lg p-3 hover:bg-muted"
+        type="button"
+        variant="ghost"
+        disabled={isLoggingOut}
+        onClick={handleLogout}
+        className="h-auto w-full justify-start gap-3 rounded-lg p-3 hover:bg-muted"
       >
         {isLoggingOut ? (
           <LoaderCircle aria-hidden="true" className="size-5 animate-spin" />

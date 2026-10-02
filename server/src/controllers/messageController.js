@@ -78,7 +78,9 @@ export const createMessage = async (req, res) => {
     }
 
     if (req.file && !(await isAllowedImageUpload(req.file))) {
-      return res.status(415).json({ error: "Unsupported message image contents" });
+      return res
+        .status(415)
+        .json({ error: "Unsupported message image contents" });
     }
 
     let imageUrl = null;

@@ -64,7 +64,9 @@ const Home = () => {
 
   return (
     <ChatWindow
-      selectedConversation={status === "ready" ? conversationState.conversation : null}
+      selectedConversation={
+        status === "ready" ? conversationState.conversation : null
+      }
       conversationStatus={status}
       conversationError={conversationState.error}
       onRetryConversation={() => setRetryCount((count) => count + 1)}

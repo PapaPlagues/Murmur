@@ -11,11 +11,14 @@ const MessageInput = ({ onSend }) => {
   const [sendError, setSendError] = useState("");
   const imagePreviewRef = useRef(null);
 
-  useEffect(() => () => {
-    if (imagePreviewRef.current) {
-      URL.revokeObjectURL(imagePreviewRef.current);
-    }
-  }, []);
+  useEffect(
+    () => () => {
+      if (imagePreviewRef.current) {
+        URL.revokeObjectURL(imagePreviewRef.current);
+      }
+    },
+    [],
+  );
 
   const handleChange = (e) => {
     setContent(e.target.value);
@@ -27,7 +30,7 @@ const MessageInput = ({ onSend }) => {
       e.preventDefault();
       handleSend();
     }
-  }
+  };
 
   const handleImageChange = (e) => {
     const nextFile = e.target.files[0] || null;
@@ -65,7 +68,9 @@ const MessageInput = ({ onSend }) => {
       }
       setImagePreview(null);
     } catch (error) {
-      setSendError(error.message || "Message could not be sent. Please try again.");
+      setSendError(
+        error.message || "Message could not be sent. Please try again.",
+      );
     } finally {
       setIsSending(false);
     }
@@ -74,7 +79,10 @@ const MessageInput = ({ onSend }) => {
   return (
     <div className="border-t border-border p-4">
       {sendError && (
-        <p role="alert" className="mb-3 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+        <p
+          role="alert"
+          className="mb-3 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+        >
           {sendError}
         </p>
       )}

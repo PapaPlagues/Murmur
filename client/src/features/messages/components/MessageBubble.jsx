@@ -20,7 +20,6 @@ const MessageBubble = ({ message, showSender, showTime }) => {
   return (
     <>
       <Message align={isCurrentUser ? "end" : "start"}>
-
         <MessageAvatar className={!showSender ? "invisible" : undefined}>
           <Link to={`/profile/${message.sender.id}`}>
             <Avatar>
@@ -43,24 +42,24 @@ const MessageBubble = ({ message, showSender, showTime }) => {
               </Link>
             </MessageHeader>
           )}
-          
-          <Bubble variant={isCurrentUser ? "default" : "muted"}>
-          {message.content && (
-            <BubbleContent>{message.content}</BubbleContent>
-          )}
 
-          {message.imageUrl && !imageUnavailable && (
-            <img
-              src={message.imageUrl}
-              alt="Message attachment"
-              className="h-auto max-w-full rounded-lg object-cover sm:max-w-sm"
-              onError={() => setImageUnavailable(true)}
-            />
-          )}
-          {imageUnavailable && (
-            <p className="text-sm text-muted-foreground">Image unavailable</p>
-          )}
-        </Bubble>
+          <Bubble variant={isCurrentUser ? "default" : "muted"}>
+            {message.content && (
+              <BubbleContent>{message.content}</BubbleContent>
+            )}
+
+            {message.imageUrl && !imageUnavailable && (
+              <img
+                src={message.imageUrl}
+                alt="Message attachment"
+                className="h-auto max-w-full rounded-lg object-cover sm:max-w-sm"
+                onError={() => setImageUnavailable(true)}
+              />
+            )}
+            {imageUnavailable && (
+              <p className="text-sm text-muted-foreground">Image unavailable</p>
+            )}
+          </Bubble>
 
           {showTime && (
             <MessageFooter>
@@ -71,7 +70,6 @@ const MessageBubble = ({ message, showSender, showTime }) => {
             </MessageFooter>
           )}
         </MessageContent>
-
       </Message>
     </>
   );

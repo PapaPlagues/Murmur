@@ -51,7 +51,6 @@ export const EditProfile = () => {
     setBannerPreviewUrl(file ? URL.createObjectURL(file) : null);
   };
 
-
   const [formData, setFormData] = useState({
     displayName: user.displayName || "",
     username: user.username || "",
@@ -100,7 +99,9 @@ export const EditProfile = () => {
       <form onSubmit={handleSubmit} className="my-auto w-full max-w-3xl">
         <Card className="w-full border-border/80 shadow-sm">
           <CardHeader className="border-b border-border/70 px-5 py-5 sm:px-8">
-            <CardTitle className="text-xl font-semibold">Edit Profile</CardTitle>
+            <CardTitle className="text-xl font-semibold">
+              Edit Profile
+            </CardTitle>
             <p className="text-sm text-muted-foreground">
               Update the details people see on your profile.
             </p>
@@ -118,11 +119,19 @@ export const EditProfile = () => {
 
               <div className="aspect-7/2 max-h-56 min-h-28 w-full overflow-hidden rounded-lg border border-border/70 bg-muted sm:min-h-36">
                 <img
-                  src={bannerPreviewUrl || user?.banner || "/assets/banner-fallback.svg"}
+                  src={
+                    bannerPreviewUrl ||
+                    user?.banner ||
+                    "/assets/banner-fallback.svg"
+                  }
                   alt="Banner preview"
                   className="h-full w-full object-cover"
                   onError={(event) => {
-                    if (event.currentTarget.src.endsWith("/assets/banner-fallback.svg")) {
+                    if (
+                      event.currentTarget.src.endsWith(
+                        "/assets/banner-fallback.svg",
+                      )
+                    ) {
                       event.currentTarget.removeAttribute("src");
                     } else {
                       event.currentTarget.src = "/assets/banner-fallback.svg";
@@ -144,17 +153,19 @@ export const EditProfile = () => {
                   </Avatar>
                   <div className="min-w-0">
                     <p className="text-sm font-medium">Profile picture</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Square images work best.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Square images work best.
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="banner">Banner image</Label>
                   <Input
-                  id="banner"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleBannerChange}
-                  className="h-auto min-h-10 cursor-pointer py-2 file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-xs file:font-medium"
+                    id="banner"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleBannerChange}
+                    className="h-auto min-h-10 cursor-pointer py-2 file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1 file:text-xs file:font-medium"
                   />
                 </div>
                 <div className="space-y-2 sm:col-start-2">
@@ -214,17 +225,32 @@ export const EditProfile = () => {
 
             {/* Actions */}
             {saveError && (
-              <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+              <p
+                role="alert"
+                className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+              >
                 {saveError}
               </p>
             )}
             <div className="flex flex-col-reverse gap-3 border-t border-border/70 pt-5 sm:flex-row sm:justify-end">
-              <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => navigate("/profile")} disabled={isSaving}>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => navigate("/profile")}
+                disabled={isSaving}
+              >
                 Cancel
               </Button>
 
-              <Button type="submit" className="w-full sm:w-auto" disabled={isSaving}>
-                {isSaving && <LoaderCircle aria-hidden="true" className="animate-spin" />}
+              <Button
+                type="submit"
+                className="w-full sm:w-auto"
+                disabled={isSaving}
+              >
+                {isSaving && (
+                  <LoaderCircle aria-hidden="true" className="animate-spin" />
+                )}
                 {isSaving ? "Saving..." : "Save Changes"}
               </Button>
             </div>

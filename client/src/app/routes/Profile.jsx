@@ -99,7 +99,9 @@ const Profile = () => {
       <ResourceState
         icon={UserRound}
         title="Profile couldn’t load"
-        description={profileState.error || "Check your connection and try again."}
+        description={
+          profileState.error || "Check your connection and try again."
+        }
         error
         actionLabel="Retry"
         onAction={() => setRetryCount((count) => count + 1)}

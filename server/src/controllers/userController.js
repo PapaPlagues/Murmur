@@ -88,7 +88,9 @@ export const updateProfile = async (req, res) => {
       }
 
       if (/\s/.test(body.username)) {
-        return res.status(400).json({ error: "Username cannot contain spaces" });
+        return res
+          .status(400)
+          .json({ error: "Username cannot contain spaces" });
       }
 
       if (!body.username.trim() || body.username.trim().length > 32) {
@@ -159,7 +161,9 @@ export const updateAvatar = async (req, res) => {
     }
 
     if (!(await isAllowedImageUpload(req.file))) {
-      return res.status(415).json({ error: "Unsupported avatar image contents" });
+      return res
+        .status(415)
+        .json({ error: "Unsupported avatar image contents" });
     }
 
     const result = await new Promise((resolve, reject) => {
@@ -220,7 +224,9 @@ export const updateBanner = async (req, res) => {
     }
 
     if (!(await isAllowedImageUpload(req.file))) {
-      return res.status(415).json({ error: "Unsupported banner image contents" });
+      return res
+        .status(415)
+        .json({ error: "Unsupported banner image contents" });
     }
 
     const result = await new Promise((resolve, reject) => {
@@ -281,17 +287,16 @@ export const heartbeat = async (req, res) => {
       },
       data: {
         lastSeenAt: new Date(),
-      }
+      },
     });
 
     return res.status(200).json({
       lastSeenAt: user.lastSeenAt,
     });
-
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return res.status(500).json({
       error: "Failed to update presence",
     });
   }
-}
+};

@@ -111,7 +111,11 @@ const Login = () => {
             </Field>
           </FieldGroup>
 
-          <Button className="w-full hover:cursor-pointer" type="submit" disabled={loading}>
+          <Button
+            className="w-full hover:cursor-pointer"
+            type="submit"
+            disabled={loading}
+          >
             {loading ? "Logging in..." : "Login"}
           </Button>
 

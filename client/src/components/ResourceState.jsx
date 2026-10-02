@@ -36,7 +36,9 @@ const ResourceState = ({
           }`}
         />
         <h2 className="mt-3 text-sm font-semibold">{title}</h2>
-        <p className={`mt-1 text-sm ${error ? "text-destructive" : "text-muted-foreground"}`}>
+        <p
+          className={`mt-1 text-sm ${error ? "text-destructive" : "text-muted-foreground"}`}
+        >
           {description}
         </p>
         {actionLabel && onAction && (

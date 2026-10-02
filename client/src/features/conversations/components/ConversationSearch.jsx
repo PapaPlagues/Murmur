@@ -9,11 +9,11 @@ const ConversationSearch = ({ search, setSearch, filteredResults, label }) => {
   return (
     <InputGroup className="max-w-xs">
       <InputGroupInput
-      type="text"
-      placeholder="Search..."
-      aria-label={label}
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
+        type="text"
+        placeholder="Search..."
+        aria-label={label}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
 
       <InputGroupAddon>
@@ -23,7 +23,8 @@ const ConversationSearch = ({ search, setSearch, filteredResults, label }) => {
       <InputGroupAddon align="inline-end">
         {search && (
           <span aria-live="polite">
-            {filteredResults.length} {filteredResults.length === 1 ? "result" : "results"}
+            {filteredResults.length}{" "}
+            {filteredResults.length === 1 ? "result" : "results"}
           </span>
         )}
       </InputGroupAddon>

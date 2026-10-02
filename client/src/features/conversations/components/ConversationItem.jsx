@@ -6,8 +6,15 @@ import {
 } from "@/components/ui/avatar";
 import { isUserOnline } from "@/utils/presence";
 
-const ConversationItem = ({ username, displayName, lastMessage, avatar, lastSeenAt, isActive = false, onClick }) => {
-
+const ConversationItem = ({
+  username,
+  displayName,
+  lastMessage,
+  avatar,
+  lastSeenAt,
+  isActive = false,
+  onClick,
+}) => {
   const online = isUserOnline(lastSeenAt);
 
   return (
@@ -23,9 +30,7 @@ const ConversationItem = ({ username, displayName, lastMessage, avatar, lastSeen
 
         <AvatarBadge
           className={
-            online
-              ? "bg-green-600 dark:bg-green-800"
-              : "bg-muted-foreground"
+            online ? "bg-green-600 dark:bg-green-800" : "bg-muted-foreground"
           }
           aria-hidden="true"
         />
@@ -34,7 +39,9 @@ const ConversationItem = ({ username, displayName, lastMessage, avatar, lastSeen
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">{displayName || username}</p>
         {username && (
-          <p className="truncate text-xs text-muted-foreground pb-1">@{username}</p>
+          <p className="truncate text-xs text-muted-foreground pb-1">
+            @{username}
+          </p>
         )}
         {lastMessage !== undefined && (
           <p className="truncate text-sm text-muted-foreground">

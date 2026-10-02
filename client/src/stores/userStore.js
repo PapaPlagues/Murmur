@@ -55,7 +55,7 @@ const useUserStore = create((set) => ({
   updateBanner: async (file) => {
     const user = await updateBannerApi(file);
     return user;
-  }
+  },
 }));
 
 export default useUserStore;

@@ -23,12 +23,16 @@ const ChatWindow = ({
   );
 
   const messages = useMessageStore((state) => state.messages);
-  const messageConversationId = useMessageStore((state) => state.conversationId);
+  const messageConversationId = useMessageStore(
+    (state) => state.conversationId,
+  );
   const messageLoadStatus = useMessageStore((state) => state.loadStatus);
   const messageLoadError = useMessageStore((state) => state.loadError);
   const sendMessage = useMessageStore((state) => state.sendMessage);
   const getMessages = useMessageStore((state) => state.getMessages);
-  const updateLatestMessage = useConvStore((state) => state.updateLatestMessage);
+  const updateLatestMessage = useConvStore(
+    (state) => state.updateLatestMessage,
+  );
 
   useEffect(() => {
     if (!selectedConversation?.id) return;
@@ -37,100 +41,107 @@ const ChatWindow = ({
   }, [selectedConversation?.id, getMessages]);
 
   const handleSendMessage = async (content, fileImage) => {
-    const message = await sendMessage(selectedConversation.id, { content, fileImage });
+    const message = await sendMessage(selectedConversation.id, {
+      content,
+      fileImage,
+    });
     updateLatestMessage(selectedConversation.id, message);
   };
 
   return (
     <section className="flex min-h-0 flex-1 flex-col bg-background">
-  {selectedProfile ? (
-    <UserProfile user={selectedProfile} onMessage={onMessage} />
-  ) : selectedConversation ? (
-    <>
-      {/* Conversation header */}
-      <div className="shrink-0 border-b border-border px-4 py-3 sm:px-6 sm:py-4">
-        <h2 className="truncate font-semibold">
-          {otherMember?.user.displayName || otherMember?.user.username}
-        </h2>
-        {otherMember?.user.username && (
-          <p className="truncate text-sm text-muted-foreground">
-            @{otherMember.user.username}
-          </p>
-        )}
-      </div>
+      {selectedProfile ? (
+        <UserProfile user={selectedProfile} onMessage={onMessage} />
+      ) : selectedConversation ? (
+        <>
+          {/* Conversation header */}
+          <div className="shrink-0 border-b border-border px-4 py-3 sm:px-6 sm:py-4">
+            <h2 className="truncate font-semibold">
+              {otherMember?.user.displayName || otherMember?.user.username}
+            </h2>
+            {otherMember?.user.username && (
+              <p className="truncate text-sm text-muted-foreground">
+                @{otherMember.user.username}
+              </p>
+            )}
+          </div>
 
-      {/* Messages */}
-      {messageConversationId !== selectedConversation.id ||
-      messageLoadStatus === "idle" ||
-      messageLoadStatus === "loading" ? (
+          {/* Messages */}
+          {messageConversationId !== selectedConversation.id ||
+          messageLoadStatus === "idle" ||
+          messageLoadStatus === "loading" ? (
+            <ResourceState
+              icon={MessagesSquare}
+              title="Loading messages"
+              description="Your conversation is on its way."
+              loading
+              className="min-h-0 flex-1"
+            />
+          ) : messageLoadStatus === "error" ? (
+            <ResourceState
+              icon={MessagesSquare}
+              title="Messages couldn’t load"
+              description={
+                messageLoadError || "Check your connection and try again."
+              }
+              error
+              actionLabel="Retry"
+              onAction={() => getMessages(selectedConversation.id)}
+              className="min-h-0 flex-1"
+            />
+          ) : messages.length === 0 ? (
+            <ResourceState
+              icon={MessageSquareText}
+              title="A quiet start"
+              description="No messages here yet. Send the first one below."
+              className="min-h-0 flex-1"
+            />
+          ) : (
+            <MessageList messages={messages} />
+          )}
+
+          {/* Input */}
+          <div className="shrink-0">
+            <MessageInput onSend={handleSendMessage} />
+          </div>
+        </>
+      ) : conversationStatus === "loading" ? (
         <ResourceState
           icon={MessagesSquare}
-          title="Loading messages"
-          description="Your conversation is on its way."
+          title="Loading conversation"
+          description="Opening your messages."
           loading
-          className="min-h-0 flex-1"
+          className="flex-1"
         />
-      ) : messageLoadStatus === "error" ? (
+      ) : conversationStatus === "not-found" ? (
         <ResourceState
           icon={MessagesSquare}
-          title="Messages couldn’t load"
-          description={messageLoadError || "Check your connection and try again."}
+          title="Conversation unavailable"
+          description="This conversation may have been removed, or you may not have access."
+          error
+          className="flex-1"
+        />
+      ) : conversationStatus === "error" ? (
+        <ResourceState
+          icon={MessagesSquare}
+          title="Conversation couldn’t load"
+          description={
+            conversationError || "Check your connection and try again."
+          }
           error
           actionLabel="Retry"
-          onAction={() => getMessages(selectedConversation.id)}
-          className="min-h-0 flex-1"
-        />
-      ) : messages.length === 0 ? (
-        <ResourceState
-          icon={MessageSquareText}
-          title="A quiet start"
-          description="No messages here yet. Send the first one below."
-          className="min-h-0 flex-1"
+          onAction={onRetryConversation}
+          className="flex-1"
         />
       ) : (
-        <MessageList messages={messages} />
+        <div className="flex flex-1 flex-col items-center justify-center">
+          <h2 className="text-xl font-semibold">Select a conversation</h2>
+          <p className="mt-2 text-muted-foreground">
+            Choose someone from your conversations to start chatting.
+          </p>
+        </div>
       )}
-
-      {/* Input */}
-      <div className="shrink-0">
-        <MessageInput onSend={handleSendMessage} />
-      </div>
-    </>
-  ) : conversationStatus === "loading" ? (
-    <ResourceState
-      icon={MessagesSquare}
-      title="Loading conversation"
-      description="Opening your messages."
-      loading
-      className="flex-1"
-    />
-  ) : conversationStatus === "not-found" ? (
-    <ResourceState
-      icon={MessagesSquare}
-      title="Conversation unavailable"
-      description="This conversation may have been removed, or you may not have access."
-      error
-      className="flex-1"
-    />
-  ) : conversationStatus === "error" ? (
-    <ResourceState
-      icon={MessagesSquare}
-      title="Conversation couldn’t load"
-      description={conversationError || "Check your connection and try again."}
-      error
-      actionLabel="Retry"
-      onAction={onRetryConversation}
-      className="flex-1"
-    />
-  ) : (
-    <div className="flex flex-1 flex-col items-center justify-center">
-      <h2 className="text-xl font-semibold">Select a conversation</h2>
-      <p className="mt-2 text-muted-foreground">
-        Choose someone from your conversations to start chatting.
-      </p>
-    </div>
-  )}
-</section>
+    </section>
   );
 };
 

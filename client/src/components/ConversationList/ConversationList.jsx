@@ -29,18 +29,20 @@ const ConversationList = () => {
   // Search Bar
   const [search, setSearch] = useState("");
 
-  const filteredUsers = users.filter((user) => 
-  user.username.toLowerCase().includes(search.toLowerCase()))
+  const filteredUsers = users.filter((user) =>
+    user.username.toLowerCase().includes(search.toLowerCase()),
+  );
 
   const filteredConversations = conversations.filter((conversation) => {
     const otherMember = conversation.members.find(
-                (member) => member.userId !== currentUser.id,
-              );
-    return otherMember.user.username.toLowerCase().includes(search.toLowerCase());
+      (member) => member.userId !== currentUser.id,
+    );
+    return otherMember.user.username
+      .toLowerCase()
+      .includes(search.toLowerCase());
   });
 
   const filteredResults = showUsers ? filteredUsers : filteredConversations;
-
 
   useEffect(() => {
     getConversations();
@@ -72,7 +74,9 @@ const ConversationList = () => {
           variant="ghost"
           size="icon"
           onClick={() => setShowUsers(!showUsers)}
-          aria-label={showUsers ? "Close people list" : "Start a new conversation"}
+          aria-label={
+            showUsers ? "Close people list" : "Start a new conversation"
+          }
           aria-expanded={showUsers}
           aria-controls="conversation-list-content"
         >
@@ -89,7 +93,10 @@ const ConversationList = () => {
         />
       </div>
 
-      <div id="conversation-list-content" className="murmur-scrollbar my-5 min-h-0 flex-1 overflow-y-auto md:my-7">
+      <div
+        id="conversation-list-content"
+        className="murmur-scrollbar my-5 min-h-0 flex-1 overflow-y-auto md:my-7"
+      >
         {showUsers ? (
           <div>
             <p>Users</p>
@@ -106,7 +113,9 @@ const ConversationList = () => {
               <ResourceState
                 icon={UsersRound}
                 title="People couldn’t load"
-                description={usersLoadError || "Check your connection and try again."}
+                description={
+                  usersLoadError || "Check your connection and try again."
+                }
                 error
                 actionLabel="Retry"
                 onAction={getUsers}
@@ -117,13 +126,16 @@ const ConversationList = () => {
               <ResourceState
                 icon={users.length === 0 ? UsersRound : SearchX}
                 title={users.length === 0 ? "No people yet" : "No matches"}
-                description={users.length === 0
-                  ? "There are no other people to message right now."
-                  : "Try a different name or clear your search."}
+                description={
+                  users.length === 0
+                    ? "There are no other people to message right now."
+                    : "Try a different name or clear your search."
+                }
                 className="min-h-40 px-0"
               />
             )}
-            {usersLoadStatus === "ready" && filteredUsers.map((user) => (
+            {usersLoadStatus === "ready" &&
+              filteredUsers.map((user) => (
                 <ConversationItem
                   key={user.id}
                   username={user.username}
@@ -136,7 +148,8 @@ const ConversationList = () => {
           </div>
         ) : (
           <div>
-            {(conversationsLoadStatus === "idle" || conversationsLoadStatus === "loading") && (
+            {(conversationsLoadStatus === "idle" ||
+              conversationsLoadStatus === "loading") && (
               <ResourceState
                 icon={MessageSquareText}
                 title="Loading conversations"
@@ -149,44 +162,60 @@ const ConversationList = () => {
               <ResourceState
                 icon={MessageSquareText}
                 title="Conversations couldn’t load"
-                description={conversationsLoadError || "Check your connection and try again."}
+                description={
+                  conversationsLoadError ||
+                  "Check your connection and try again."
+                }
                 error
                 actionLabel="Retry"
                 onAction={getConversations}
                 className="min-h-40 px-0"
               />
             )}
-            {conversationsLoadStatus === "ready" && filteredConversations.length === 0 && (
-              <ResourceState
-                icon={conversations.length === 0 ? MessageSquareText : SearchX}
-                title={conversations.length === 0 ? "No conversations yet" : "No matches"}
-                description={conversations.length === 0
-                  ? "Choose a person to start your first conversation."
-                  : "Try another name or clear your search."}
-                className="min-h-40 px-0"
-              />
-            )}
-            {conversationsLoadStatus === "ready" && filteredConversations.map((conversation) => {
-              const otherMember = conversation.members.find(
-                (member) => member.userId !== currentUser.id,
-              );
+            {conversationsLoadStatus === "ready" &&
+              filteredConversations.length === 0 && (
+                <ResourceState
+                  icon={
+                    conversations.length === 0 ? MessageSquareText : SearchX
+                  }
+                  title={
+                    conversations.length === 0
+                      ? "No conversations yet"
+                      : "No matches"
+                  }
+                  description={
+                    conversations.length === 0
+                      ? "Choose a person to start your first conversation."
+                      : "Try another name or clear your search."
+                  }
+                  className="min-h-40 px-0"
+                />
+              )}
+            {conversationsLoadStatus === "ready" &&
+              filteredConversations.map((conversation) => {
+                const otherMember = conversation.members.find(
+                  (member) => member.userId !== currentUser.id,
+                );
 
-              return (
-                <ConversationItem
-                  key={conversation.id}
-                  username={otherMember.user.username}
-                  displayName={otherMember.user.displayName}
-                  lastMessage={
+                return (
+                  <ConversationItem
+                    key={conversation.id}
+                    username={otherMember.user.username}
+                    displayName={otherMember.user.displayName}
+                    lastMessage={
                       conversation.messages?.[0]?.content ||
                       (conversation.messages?.[0]?.imageUrl ? "📷 Image" : null)
                     }
-                  avatar={otherMember.user.avatar}
-                  lastSeenAt={otherMember.user.lastSeenAt}
-                  isActive={conversation.id === conversationMatch?.params.conversationId}
-                  onClick={() => handleConversationClick(conversation)}
-                />
-              );
-            })}
+                    avatar={otherMember.user.avatar}
+                    lastSeenAt={otherMember.user.lastSeenAt}
+                    isActive={
+                      conversation.id ===
+                      conversationMatch?.params.conversationId
+                    }
+                    onClick={() => handleConversationClick(conversation)}
+                  />
+                );
+              })}
           </div>
         )}
       </div>

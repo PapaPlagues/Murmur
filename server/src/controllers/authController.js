@@ -10,7 +10,7 @@ const setSessionCookie = (res, userId) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     path: "/",
     maxAge: 60 * 60 * 1000,
   });
@@ -20,7 +20,8 @@ export const register = async (req, res) => {
   try {
     const body = req.body && typeof req.body === "object" ? req.body : {};
     const { username, displayName, password } = body;
-    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    const email =
+      typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
 
     if (
       typeof username !== "string" ||
@@ -106,7 +107,8 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const body = req.body && typeof req.body === "object" ? req.body : {};
-    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    const email =
+      typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
     const { password } = body;
 
     if (!email || typeof password !== "string") {
@@ -172,7 +174,7 @@ export const logout = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
     });
 

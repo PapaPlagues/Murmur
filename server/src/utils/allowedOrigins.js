@@ -16,7 +16,11 @@ const parseOrigins = (value) =>
     .map((origin) => normalizeOrigin(origin.trim()))
     .filter(Boolean);
 
-export const getAllowedOrigins = ({ isProduction, devOrigin, productionOrigin }) =>
+export const getAllowedOrigins = ({
+  isProduction,
+  devOrigin,
+  productionOrigin,
+}) =>
   (isProduction ? [productionOrigin] : [devOrigin, productionOrigin])
     .flatMap(parseOrigins)
     .filter(Boolean);

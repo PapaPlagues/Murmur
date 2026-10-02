@@ -1,4 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage, AvatarBadge } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  AvatarBadge,
+} from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { isUserOnline } from "@/utils/presence";
 import { useNavigate } from "react-router";
@@ -24,9 +29,9 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
     }
   };
 
-    if (!user) {
-      return null;
-    }
+  if (!user) {
+    return null;
+  }
 
   const online = isUserOnline(user?.lastSeenAt);
   const createdAt = user?.createdAt == null ? null : new Date(user.createdAt);
@@ -44,18 +49,22 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
         <div className="relative">
           {/* Banner */}
           <div className="aspect-3.5/1 max-h-64 min-h-36 w-full overflow-hidden rounded-t-xl bg-muted sm:min-h-48">
-          <img
-            src={user?.banner || "/assets/banner-fallback.svg"}
-            alt=""
-            className="h-full w-full object-cover"
-            onError={(event) => {
-              if (event.currentTarget.src.endsWith("/assets/banner-fallback.svg")) {
-                event.currentTarget.removeAttribute("src");
-              } else {
-                event.currentTarget.src = "/assets/banner-fallback.svg";
-              }
-            }}
-          />
+            <img
+              src={user?.banner || "/assets/banner-fallback.svg"}
+              alt=""
+              className="h-full w-full object-cover"
+              onError={(event) => {
+                if (
+                  event.currentTarget.src.endsWith(
+                    "/assets/banner-fallback.svg",
+                  )
+                ) {
+                  event.currentTarget.removeAttribute("src");
+                } else {
+                  event.currentTarget.src = "/assets/banner-fallback.svg";
+                }
+              }}
+            />
           </div>
 
           {/* Avatar */}
@@ -90,7 +99,9 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
                 {user?.displayName || user?.username}
               </h1>
 
-              <p className="mt-1 text-sm text-muted-foreground">@{user?.username}</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                @{user?.username}
+              </p>
             </div>
 
             {isOwnProfile ? (
@@ -118,7 +129,10 @@ const UserProfile = ({ user, isOwnProfile = false, onMessage }) => {
           </div>
 
           {messageError && (
-            <p role="alert" className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+            <p
+              role="alert"
+              className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+            >
               {messageError}
             </p>
           )}

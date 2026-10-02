@@ -3,7 +3,9 @@ const handleResponse = async (res) => {
 
   if (!res.ok) {
     const errorMsg =
-      data?.error || data?.message || `HTTP ${res.status}: Something went wrong.`;
+      data?.error ||
+      data?.message ||
+      `HTTP ${res.status}: Something went wrong.`;
 
     const error = new Error(errorMsg);
     error.status = res.status;
@@ -43,15 +45,16 @@ export const updateAvatar = async (file) => {
   formData.append("avatar", file);
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/users/me/avatar`, {
+    `${import.meta.env.VITE_API_URL}/users/me/avatar`,
+    {
       method: "PATCH",
       credentials: "include",
       body: formData,
-    }
+    },
   );
 
   return handleResponse(response);
-}
+};
 
 // Update banner
 export const updateBanner = async (file) => {
@@ -60,15 +63,16 @@ export const updateBanner = async (file) => {
   formData.append("banner", file);
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/users/me/banner`, {
+    `${import.meta.env.VITE_API_URL}/users/me/banner`,
+    {
       method: "PATCH",
       credentials: "include",
       body: formData,
-    }
+    },
   );
 
   return handleResponse(response);
-}
+};
 
 // get user
 export const getUser = async (userId) => {
@@ -93,4 +97,4 @@ export const sendHeartbeat = async () => {
   );
 
   return handleResponse(response);
-}
+};

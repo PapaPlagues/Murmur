@@ -292,11 +292,13 @@ describe("Authentication", () => {
     const statuses = [];
 
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      const response = await request(app).post("/auth/register").send({
-        username: `LimitedUser${attempt}`,
-        email: `limited${attempt}@example.com`,
-        password: "password123",
-      });
+      const response = await request(app)
+        .post("/auth/register")
+        .send({
+          username: `LimitedUser${attempt}`,
+          email: `limited${attempt}@example.com`,
+          password: "password123",
+        });
       statuses.push(response.status);
     }
 
