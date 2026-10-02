@@ -174,9 +174,20 @@ export const getConversations = async (req, res) => {
       },
     });
 
-    const conversations = memberships.map(
-      (membership) => membership.conversation,
-    );
+    const conversations = memberships
+      .map((membership) => membership.conversation)
+      .sort((first, second) => {
+        const firstLatestMessage = first.messages[0];
+        const secondLatestMessage = second.messages[0];
+
+        if (!firstLatestMessage) return secondLatestMessage ? 1 : 0;
+        if (!secondLatestMessage) return -1;
+
+        return (
+          secondLatestMessage.createdAt.getTime() -
+          firstLatestMessage.createdAt.getTime()
+        );
+      });
 
     return res.status(200).json(conversations);
   } catch (err) {

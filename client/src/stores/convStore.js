@@ -39,13 +39,27 @@ const useConvStore = create((set) => ({
   },
 
   updateLatestMessage: (conversationId, message) =>
-    set((state) => ({
-      conversations: state.conversations.map((conversation) =>
+    set((state) => {
+      const updatedConversations = state.conversations.map((conversation) =>
         conversation.id === conversationId
           ? { ...conversation, messages: [message] }
           : conversation,
-      ),
-    })),
+      );
+      const updatedConversation = updatedConversations.find(
+        (conversation) => conversation.id === conversationId,
+      );
+
+      return {
+        conversations: updatedConversation
+          ? [
+              updatedConversation,
+              ...updatedConversations.filter(
+                (conversation) => conversation.id !== conversationId,
+              ),
+            ]
+          : updatedConversations,
+      };
+    }),
 
   createConversation: async (userId) => {
     const conversation = await createConversationApi({ userId });

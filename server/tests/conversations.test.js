@@ -148,6 +148,54 @@ describe("Conversations", () => {
     expect(response.body[0].members).toHaveLength(2);
   });
 
+  it("returns conversations ordered by their latest message", async () => {
+    const tester = await createUser("Tester", "tester@example.com");
+    const alice = await createUser("Alice", "alice@example.com");
+    const bob = await createUser("Bob", "bob@example.com");
+    const charlie = await createUser("Charlie", "charlie@example.com");
+    const createConversation = async (userId) => {
+      const response = await request(app)
+        .post("/conversations")
+        .set("Cookie", `token=${tester.token}`)
+        .send({ userId });
+
+      expect(response.status).toBe(201);
+      return response.body;
+    };
+
+    const olderConversation = await createConversation(alice.user.id);
+    const newerConversation = await createConversation(bob.user.id);
+    const emptyConversation = await createConversation(charlie.user.id);
+
+    await prisma.message.create({
+      data: {
+        content: "Older message",
+        senderId: tester.user.id,
+        conversationId: olderConversation.id,
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      },
+    });
+    await prisma.message.create({
+      data: {
+        content: "Newer message",
+        senderId: tester.user.id,
+        conversationId: newerConversation.id,
+        createdAt: new Date("2026-02-01T00:00:00.000Z"),
+      },
+    });
+
+    const response = await request(app)
+      .get("/conversations")
+      .set("Cookie", `token=${tester.token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.map((conversation) => conversation.id)).toEqual([
+      newerConversation.id,
+      olderConversation.id,
+      emptyConversation.id,
+    ]);
+  });
+
   it("gets a specific conversation", async () => {
     const tester = await createUser("Tester", "tester@example.com");
 
